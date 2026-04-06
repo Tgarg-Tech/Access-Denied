@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Brain, Mail, Camera, Save, X, GraduationCap, Briefcase, Rocket } from 'lucide-react';
+import { Code2, Brain, Mail, Camera, Save, X, GraduationCap, Briefcase, Rocket, Trophy, ExternalLink, Github, Youtube, Star, ShieldCheck, Users, Calendar } from 'lucide-react';
 
 import { useProfile } from '../contexts/ProfileContext';
 
@@ -357,6 +357,109 @@ export function ProfilePage({}: ProfilePageProps) {
             </div>
           </div>
         </motion.div>
+
+        {/* Past Hackathons Section */}
+        {profileData.pastHackathons && profileData.pastHackathons.length > 0 && (
+          <motion.div
+             initial={{ opacity: 0, scale: 0.95 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ delay: 0.1 }}
+             className="mt-8 rounded-3xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 overflow-hidden shadow-xl p-8"
+          >
+            <div className="flex items-center gap-3 mb-6">
+               <Trophy className="w-8 h-8 text-yellow-500" />
+               <h2 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                 Past Hackathons
+               </h2>
+            </div>
+            
+            <div className="space-y-6">
+              {profileData.pastHackathons.map((hackathon) => (
+                <div key={hackathon.id} className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/5 dark:border-white/5 relative">
+                   <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                      <div>
+                         <div className="flex items-center gap-2 mb-2">
+                           <h3 className="text-xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">{hackathon.name}</h3>
+                           {hackathon.certificateVerified && <ShieldCheck className="w-5 h-5 text-green-500" title="Verified Participant" />}
+                         </div>
+                         <div className="flex flex-wrap items-center gap-4 text-sm text-[#64748B] dark:text-[#94A3B8]">
+                           <span className="flex items-center gap-1"><Calendar className="w-4 h-4"/> {hackathon.date}</span>
+                           <span className="flex items-center gap-1"><Briefcase className="w-4 h-4"/> {hackathon.rolePlayed}</span>
+                           <span className="flex items-center gap-1"><Users className="w-4 h-4"/> Team of {hackathon.teamSize}</span>
+                           <span className="px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 font-semibold">{hackathon.result}</span>
+                         </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        {hackathon.githubLink && (
+                          <a href={hackathon.githubLink} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-[#0F172A] dark:text-[#F8FAFC]">
+                            <Github className="w-5 h-5" />
+                          </a>
+                        )}
+                        {hackathon.demoLink && (
+                          <a href={hackathon.demoLink} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors text-red-500">
+                            <Youtube className="w-5 h-5" />
+                          </a>
+                        )}
+                        {hackathon.projectLink && (
+                          <a href={hackathon.projectLink} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-blue-500">
+                            <ExternalLink className="w-5 h-5" />
+                          </a>
+                        )}
+                      </div>
+                   </div>
+
+                   <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">Project Title</h4>
+                      <p className="text-[#64748B] dark:text-[#94A3B8]">{hackathon.projectTitle}</p>
+                   </div>
+
+                   <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-2">Skills Used</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {hackathon.skillsUsed.map(skill => (
+                          <span key={skill} className="px-3 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-medium">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                   </div>
+                   
+                   {hackathon.review && (
+                     <div className="mt-6 pt-6 border-t border-black/5 dark:border-white/5">
+                        <div className="flex items-center gap-2 mb-4">
+                           <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                           <h4 className="text-[#0F172A] dark:text-[#F8FAFC] font-semibold">Teammate Reviews <span className="text-sm font-normal text-[#64748B] dark:text-[#94A3B8]">({hackathon.review.averageRating}/5 Avg)</span></h4>
+                        </div>
+                        <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mb-4 italic">"{hackathon.review.summary}"</p>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                           {[
+                             { label: 'Technical', val: hackathon.review.technical },
+                             { label: 'Teamwork', val: hackathon.review.teamwork },
+                             { label: 'Communication', val: hackathon.review.communication },
+                             { label: 'Reliability', val: hackathon.review.reliability },
+                             { label: 'Problem Solving', val: hackathon.review.problemSolving },
+                             { label: 'Delivery', val: hackathon.review.delivery }
+                           ].map(cat => (
+                             <div key={cat.label} className="bg-white/50 dark:bg-[#121A2B]/50 p-3 rounded-lg border border-black/5 dark:border-white/5">
+                               <div className="flex justify-between text-xs mb-2">
+                                 <span className="text-[#64748B] dark:text-[#94A3B8] font-medium">{cat.label}</span>
+                                 <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC]">{cat.val}/5</span>
+                               </div>
+                               <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-1.5 overflow-hidden">
+                                 <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-1.5 rounded-full" style={{ width: `${(cat.val / 5) * 100}%` }}></div>
+                               </div>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                   )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
