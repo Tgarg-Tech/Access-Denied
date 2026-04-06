@@ -129,15 +129,58 @@ function App() {
     if (!user || !isProfileLookupReady) return;
 
     if (currentPage === "auth-signup" || currentPage === "auth-login") {
-      setCurrentPage(hasCompletedProfile ? "dashboard" : "loading");
+      setCurrentPage(hasCompletedProfile ? "dashboard" : "profile");
     }
   }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
+
+  useEffect(() => {
+    if (!user || !isProfileLookupReady || hasCompletedProfile) return;
+
+    const onboardingPages: Page[] = [
+      "profile",
+      "loading",
+      "auth-signup",
+      "auth-login",
+    ];
+
+    if (!onboardingPages.includes(currentPage)) {
+      setCurrentPage("profile");
+    }
+  }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
+
+  // Sync current page with URL hash so navigation updates the browser URL
+  useEffect(() => {
+    const syncFromHash = () => {
+      const raw = window.location.hash ? window.location.hash.slice(1) : "";
+      if (!raw) {
+        setCurrentPage("landing");
+        return;
+      }
+      const [pagePart, idPart] = raw.split("/");
+      setCurrentPage(pagePart as Page);
+      if (idPart) setSelectedHackathonId(idPart);
+    };
+
+    // Initialize from current hash
+    syncFromHash();
+
+    const onPop = () => syncFromHash();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const handleNavigate = useCallback((page: string, hackathonId?: string) => {
     setCurrentPage(page as Page);
     if (hackathonId) {
       setSelectedHackathonId(hackathonId);
     }
+
+    // update URL hash so the browser shows the current page and back/forward works
+    try {
+      const url = hackathonId ? `#${page}/${hackathonId}` : `#${page}`;
+      window.history.pushState({ page, hackathonId }, "", url);
+    } catch {}
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -164,6 +207,7 @@ function App() {
     year: string;
     role: string;
     skills: string[];
+    softSkills: string[];
     interests: string[];
     availability: string;
   }) => {
@@ -179,7 +223,7 @@ function App() {
       availability: form.availability,
       interest: `Interested in ${form.interests.join(", ") || "hackathon projects"}.`,
       technicalSkills: form.skills,
-      softSkills: [],
+      softSkills: form.softSkills,
       projectTypes: form.interests,
       avatar: user.photoURL || DEFAULT_AVATAR,
       updatedAt: serverTimestamp(),

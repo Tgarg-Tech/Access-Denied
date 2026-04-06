@@ -14,6 +14,7 @@ export default function Profile({ onComplete, onBack }) {
     year: profile.collegeYear || "",
     role: profile.preferredRole || "",
     skills: profile.technicalSkills || [],
+    softSkills: profile.softSkills || [],
     interests: profile.projectTypes || [],
     availability: profile.availability || "",
   });
@@ -27,6 +28,9 @@ export default function Profile({ onComplete, onBack }) {
       year: prev.year || profile.collegeYear || "",
       role: prev.role || profile.preferredRole || "",
       skills: prev.skills.length ? prev.skills : profile.technicalSkills || [],
+      softSkills: prev.softSkills.length
+        ? prev.softSkills
+        : profile.softSkills || [],
       interests: prev.interests.length
         ? prev.interests
         : profile.projectTypes || [],
@@ -65,6 +69,16 @@ export default function Profile({ onComplete, onBack }) {
     "Social Impact",
     "AR/VR",
   ];
+  const softSkills = [
+    "Communication",
+    "Leadership",
+    "Teamwork",
+    "Problem Solving",
+    "Time Management",
+    "Adaptability",
+    "Creativity",
+    "Presentation",
+  ];
 
   const toggle = (key, val) => {
     setForm((f) => ({
@@ -73,6 +87,17 @@ export default function Profile({ onComplete, onBack }) {
         ? f[key].filter((x) => x !== val)
         : [...f[key], val],
     }));
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep((prev) => prev - 1);
+      return;
+    }
+
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -303,6 +328,9 @@ export default function Profile({ onComplete, onBack }) {
               <button className="pr-btn" onClick={() => setStep(2)}>
                 Continue →
               </button>
+              <button className="pr-btn-ghost" onClick={handleBack}>
+                ← Back
+              </button>
             </>
           )}
 
@@ -339,7 +367,7 @@ export default function Profile({ onComplete, onBack }) {
               <button className="pr-btn" onClick={() => setStep(3)}>
                 Continue →
               </button>
-              <button className="pr-btn-ghost" onClick={() => setStep(1)}>
+              <button className="pr-btn-ghost" onClick={handleBack}>
                 ← Back
               </button>
             </>
@@ -348,7 +376,9 @@ export default function Profile({ onComplete, onBack }) {
           {step === 3 && (
             <>
               <div className="pr-title">What you're building</div>
-              <div className="pr-sub">Pick your interests and availability</div>
+              <div className="pr-sub">
+                Pick your interests, soft skills and availability
+              </div>
 
               <div className="pr-label">Project interests</div>
               <div className="pr-chips">
@@ -377,6 +407,19 @@ export default function Profile({ onComplete, onBack }) {
                 <option>Casual (6hrs)</option>
               </select>
 
+              <div className="pr-label">Soft skills</div>
+              <div className="pr-chips">
+                {softSkills.map((s) => (
+                  <div
+                    key={s}
+                    className={`pr-chip ${form.softSkills.includes(s) ? "selected" : ""}`}
+                    onClick={() => toggle("softSkills", s)}
+                  >
+                    {s}
+                  </div>
+                ))}
+              </div>
+
               <button
                 className="pr-btn"
                 onClick={() => {
@@ -387,6 +430,7 @@ export default function Profile({ onComplete, onBack }) {
                     collegeYear: form.year,
                     preferredRole: form.role,
                     technicalSkills: form.skills,
+                    softSkills: form.softSkills,
                     projectTypes: form.interests,
                     availability: form.availability,
                   });
@@ -399,16 +443,7 @@ export default function Profile({ onComplete, onBack }) {
               >
                 Find my team →
               </button>
-              <button
-                className="pr-btn-ghost"
-                onClick={() => {
-                  if (onBack) {
-                    onBack();
-                    return;
-                  }
-                  setStep(2);
-                }}
-              >
+              <button className="pr-btn-ghost" onClick={handleBack}>
                 ← Back
               </button>
             </>
