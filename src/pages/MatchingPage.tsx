@@ -266,9 +266,16 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                   </div>
                 </div>
 
-                <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-4">
+                <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-2">
                   {currentUser.bio}
                 </p>
+                
+                <button 
+                  onClick={() => onNavigate('userProfileView', currentUser.id)}
+                  className="text-palette-accent-primary text-sm font-bold hover:underline mb-4 flex items-center gap-1"
+                >
+                   View Full Profile <ExternalLink className="w-3 h-3" />
+                </button>
 
                 <div className="flex gap-3">
                   <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors group">
