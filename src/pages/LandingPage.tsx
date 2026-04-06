@@ -29,28 +29,28 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       title: "Smart Matching",
       description:
         "AI-powered algorithm matches you with teammates based on skills, interests, and compatibility.",
-      accent: "from-[#ff7e4c] to-[#ff4f86]",
+      accent: "bg-[#ff8a64]/90",
     },
     {
       icon: Shield,
       title: "Verified Skills",
       description:
         "Trust your team with skill verification through GitHub, portfolios, and certificates.",
-      accent: "from-[#4f8cff] to-[#3de0ff]",
+      accent: "bg-[#5d8eff]/90",
     },
     {
       icon: Target,
       title: "Role-Based Search",
       description:
         "Find the perfect complement to your team with targeted role-based recommendations.",
-      accent: "from-[#8f56ff] to-[#3de0ff]",
+      accent: "bg-[#8a67ff]/90",
     },
     {
       icon: Trophy,
       title: "Track Success",
       description:
         "Monitor team readiness scores and ensure you have all the skills needed to win.",
-      accent: "from-[#f96c6c] to-[#ffb15c]",
+      accent: "bg-[#f98964]/90",
     },
   ];
 
@@ -84,13 +84,13 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="relative min-h-screen overflow-hidden landing-mesh">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-24 top-20 h-64 w-64 rounded-full bg-[#ff8f6f]/25 blur-3xl pulse-glow" />
-        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#6280ff]/25 blur-3xl pulse-glow" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-[#35d9ff]/20 blur-3xl pulse-glow" />
+        <div className="absolute -left-24 top-20 h-64 w-64 rounded-full bg-[#ff8f6f]/20 blur-3xl pulse-glow" />
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#6280ff]/20 blur-3xl pulse-glow" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-[#35d9ff]/16 blur-3xl pulse-glow" />
         <div className="absolute right-[20%] top-[30%] h-44 w-44 rounded-full border border-white/30 dark:border-white/10" />
       </div>
 
-      <div className="pt-32 pb-20 px-6">
+      <div className="pt-8 pb-20 px-6">
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -114,7 +114,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               <h1 className="font-display text-5xl md:text-7xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-6 leading-tight tracking-tight">
                 Build a
                 <br />
-                <span className="bg-gradient-to-r from-[#ff7e4c] via-[#6878ff] to-[#38d8ff] bg-clip-text text-transparent animate-text-shift">
+                <span className="text-[#4457d8] dark:text-[#b8c3ff]">
                   Winning Squad
                 </span>
                 <br />
@@ -143,7 +143,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onNavigate("loading")}
-                  className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-[#ff7e4c] to-[#5f73ff] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#6878ff]/40 transition-all"
+                  className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl font-semibold text-white bg-gradient-to-r from-[#ff7e4c] via-[#ff8f6f] to-[#5f73ff] shadow-xl shadow-[#5f73ff]/35 border border-white/30 hover:brightness-105 hover:shadow-2xl hover:shadow-[#5f73ff]/40 transition-all"
                 >
                   <span>Get Started</span>
                   <ArrowRight className="w-5 h-5" />
@@ -162,7 +162,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               transition={{ delay: 0.2, duration: 0.7 }}
               className="relative"
             >
-              <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-br from-[#ff9b74]/70 via-[#7085ff]/60 to-[#42d9ff]/60 blur" />
+              <div className="absolute -inset-1 rounded-[28px] bg-[#6f84ff]/20 blur-2xl" />
               <div className="relative rounded-[28px] glass-panel p-6 md:p-8 border-white/70 dark:border-white/15">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -171,28 +171,28 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                       92%
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ff845b] to-[#6f7dff] flex items-center justify-center">
-                    <Orbit className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-xl glass-panel-soft flex items-center justify-center">
+                    <Orbit className="w-6 h-6 text-[#4f5ef2] dark:text-white" />
                   </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
-                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                  <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
                     <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Frontend Engineer</span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">Matched</span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-emerald-600 dark:text-emerald-300">Matched</span>
                   </div>
-                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                  <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
                     <span className="text-sm text-[#495781] dark:text-[#c1caeb]">ML Specialist</span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-300">Suggested</span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-cyan-600 dark:text-cyan-300">Suggested</span>
                   </div>
-                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                  <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
                     <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Pitch Lead</span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300">Open</span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-violet-600 dark:text-violet-300">Open</span>
                   </div>
                 </div>
 
-                <div className="rounded-2xl p-4 bg-gradient-to-r from-[#ff7e4c] via-[#6e78ff] to-[#35d9ff] text-white">
-                  <p className="text-sm opacity-90">Recommended next action</p>
+                <div className="rounded-2xl p-4 glass-panel-soft text-[#2f3f73] dark:text-[#d0d9fb]">
+                  <p className="text-sm opacity-80">Recommended next action</p>
                   <p className="font-semibold">Invite 2 top candidates to Team Orbit</p>
                 </div>
               </div>
@@ -239,6 +239,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-5">
+                <span className="h-2 w-2 rounded-full bg-[#5f73ff]" />
+                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">Simple process, strong teams</span>
+              </div>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 How It Works
               </h2>
@@ -247,7 +251,8 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="relative grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="hidden lg:block absolute left-[12.5%] right-[12.5%] top-8 h-px bg-gradient-to-r from-[#ff8f6f]/45 via-[#6277ff]/45 to-[#35d9ff]/45" />
               {steps.map((step, index) => (
                 <motion.div
                   key={step.number}
@@ -255,10 +260,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative p-8 rounded-2xl glass-panel transition-transform duration-300 hover:-translate-y-1"
+                  className="relative p-7 rounded-2xl glass-panel gradient-border-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#6472ff]/12"
                 >
-                  <div className="font-display text-6xl font-bold text-[#5f73ff]/15 dark:text-[#7f89ff]/25 mb-4">
-                    {step.number}
+                  <div className="relative z-10 w-16 h-16 mb-5 rounded-2xl glass-panel-soft flex items-center justify-center border border-white/80 dark:border-white/15">
+                    <span className="font-display text-2xl font-bold text-[#4b5eea] dark:text-[#c7d0ff]">
+                      {step.number}
+                    </span>
+                  </div>
+                  <div className="mb-3 inline-flex px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide bg-[#5f73ff]/15 text-[#4a5bc9] dark:bg-[#5f73ff]/20 dark:text-[#c5ceff]">
+                    STEP {index + 1}
                   </div>
                   <h3 className="text-xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
                     {step.title}
@@ -282,6 +292,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-5">
+                <Sparkles className="w-4 h-4 text-[#5a67e8]" />
+                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">Built for fast-moving teams</span>
+              </div>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 Powerful Features
               </h2>
@@ -300,42 +314,67 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-8 rounded-2xl glass-panel hover:shadow-lg hover:shadow-[#6472ff]/10 transition-all gradient-border-card"
+                    className="relative overflow-hidden p-8 rounded-2xl glass-panel hover:shadow-lg hover:shadow-[#6472ff]/15 transition-all gradient-border-card"
                   >
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#6679ff]/12 blur-2xl" />
                     <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.accent} flex items-center justify-center mb-6`}
+                      className={`w-12 h-12 rounded-xl glass-panel-soft ${feature.accent} flex items-center justify-center mb-6 border border-white/40`}
                     >
-                      <Icon className="w-6 h-6 text-white" />
+                      <Icon className="w-6 h-6 text-[#14224d] dark:text-white" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
+                    <h3 className="text-2xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
                       {feature.title}
                     </h3>
-                    <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed">
+                    <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed mb-4">
                       {feature.description}
                     </p>
+                    <div className="inline-flex items-center gap-2 text-sm font-medium text-[#4b5ce0] dark:text-[#c5ceff]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#5f73ff]" />
+                      <span>Optimized for hackathon velocity</span>
+                    </div>
                   </motion.div>
                 );
               })}
             </div>
 
+            <div className="glass-panel rounded-3xl p-7 md:p-8 mb-8 gradient-border-card">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide bg-[#5f73ff]/15 text-[#4b5cd4] dark:bg-[#5f73ff]/20 dark:text-[#c6cfff]">
+                  What You Unlock
+                </span>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium glass-panel-soft text-[#52608a] dark:text-[#c2cceb]">
+                  Better role coverage
+                </span>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium glass-panel-soft text-[#52608a] dark:text-[#c2cceb]">
+                  Faster team decisions
+                </span>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium glass-panel-soft text-[#52608a] dark:text-[#c2cceb]">
+                  Higher project momentum
+                </span>
+              </div>
+              <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed">
+                The platform combines profile quality, role balance, and collaboration signals so you can spend less time searching and more time building.
+              </p>
+            </div>
+
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
-                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#ff7d53] to-[#ff4f86] flex items-center justify-center mb-4">
-                  <Users className="w-5 h-5 text-white" />
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card hover:shadow-lg hover:shadow-[#ff8a64]/10 transition-all">
+                <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#ff8a64]/70 border border-white/40 flex items-center justify-center mb-4">
+                  <Users className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Chemistry-first Matching</h3>
                 <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Beyond skills, we score communication style and collaboration rhythm.</p>
               </div>
-              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
-                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#5f75ff] to-[#38d9ff] flex items-center justify-center mb-4">
-                  <Sparkles className="w-5 h-5 text-white" />
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card hover:shadow-lg hover:shadow-[#5f75ff]/10 transition-all">
+                <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#5f75ff]/70 border border-white/40 flex items-center justify-center mb-4">
+                  <Sparkles className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Instant Team Drafts</h3>
                 <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Get ready-to-invite squads with balanced roles in one click.</p>
               </div>
-              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
-                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#9a5cff] to-[#5f75ff] flex items-center justify-center mb-4">
-                  <Rocket className="w-5 h-5 text-white" />
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card hover:shadow-lg hover:shadow-[#8a67ff]/10 transition-all">
+                <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#8a67ff]/70 border border-white/40 flex items-center justify-center mb-4">
+                  <Rocket className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Launch-ready Tracking</h3>
                 <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Know team gaps early with role health and readiness signals.</p>
@@ -347,24 +386,24 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-12 rounded-3xl bg-gradient-to-br from-[#ff7e4c] via-[#7d69ff] to-[#32d9ff] shadow-2xl shadow-[#6d76ff]/30"
+            className="text-center p-12 rounded-3xl glass-panel border border-white/80 dark:border-white/15"
           >
             <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                <Rocket className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl glass-panel-soft bg-[#5f75ff]/70 flex items-center justify-center">
+                <Rocket className="w-6 h-6 text-[#14224d] dark:text-white" />
               </div>
             </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-[#14204b] dark:text-white mb-4">
               Ready to Find Your Team?
             </h2>
-            <p className="text-white/90 text-lg mb-8">
+            <p className="text-[#4f5f8a] dark:text-[#b8c3e6] text-lg mb-8">
               Join thousands of developers building winning teams on HackMate
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate("loading")}
-              className="px-8 py-4 bg-white text-[#4f5af7] font-semibold rounded-xl hover:shadow-xl transition-all"
+              className="px-8 py-4 glass-panel-soft text-[#4454c3] dark:text-[#d5dcfb] font-semibold rounded-xl hover:shadow-xl transition-all"
             >
               Start Matching Now
             </motion.button>

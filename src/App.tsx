@@ -43,6 +43,27 @@ const PROTECTED_PAGES: Page[] = [
 const DEFAULT_AVATAR =
   "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400";
 
+const PROFILE_COMPLETION_STORAGE_PREFIX = "hackmate_profile_completed_";
+
+const getProfileCompletionKey = (uid: string) =>
+  `${PROFILE_COMPLETION_STORAGE_PREFIX}${uid}`;
+
+const readProfileCompletionCache = (uid: string) => {
+  try {
+    return localStorage.getItem(getProfileCompletionKey(uid)) === "true";
+  } catch {
+    return false;
+  }
+};
+
+const writeProfileCompletionCache = (uid: string, completed: boolean) => {
+  try {
+    localStorage.setItem(getProfileCompletionKey(uid), completed ? "true" : "false");
+  } catch {
+    // Ignore localStorage errors (private mode/quota) and continue.
+  }
+};
+
 function App() {
   const { user, isAuthReady } = useAuth();
   const { setProfile, updateProfile } = useProfile();
@@ -98,6 +119,7 @@ function App() {
             avatar: saved.avatar || user.photoURL || DEFAULT_AVATAR,
           });
           setHasCompletedProfile(true);
+          writeProfileCompletionCache(user.uid, true);
         } else {
           updateProfile({
             fullName: user.displayName || "",
@@ -105,11 +127,13 @@ function App() {
             username: user.email?.split("@")[0] || "",
             avatar: user.photoURL || DEFAULT_AVATAR,
           });
-          setHasCompletedProfile(false);
+          const cachedCompletion = readProfileCompletionCache(user.uid);
+          setHasCompletedProfile(cachedCompletion);
         }
       } catch {
         if (!cancelled) {
-          setHasCompletedProfile(false);
+          const cachedCompletion = readProfileCompletionCache(user.uid);
+          setHasCompletedProfile(cachedCompletion);
         }
       } finally {
         if (!cancelled) {
@@ -130,6 +154,26 @@ function App() {
 
     if (currentPage === "auth-signup" || currentPage === "auth-login") {
       setCurrentPage(hasCompletedProfile ? "dashboard" : "profile");
+    }
+  }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
+
+  useEffect(() => {
+    if (!user || !isProfileLookupReady || !hasCompletedProfile) return;
+
+    const onboardingPages: Page[] = [
+      "profile",
+      "loading",
+      "auth-signup",
+      "auth-login",
+    ];
+
+    if (onboardingPages.includes(currentPage)) {
+      setCurrentPage("dashboard");
+      try {
+        window.history.replaceState({ page: "dashboard" }, "", "#dashboard");
+      } catch {
+        // Ignore history API failures in restricted environments.
+      }
     }
   }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
 
@@ -248,6 +292,7 @@ function App() {
     });
 
     setHasCompletedProfile(true);
+    writeProfileCompletionCache(user.uid, true);
     handleNavigate("dashboard");
   };
 
