@@ -3,7 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --palette-background: #FFF7FB;
+    --palette-section: #FDEEF5;
+    --palette-card: #FFFFFF;
+    --palette-border: #F3D6E4;
+    --palette-text-primary: #3A2A33;
+    --palette-text-secondary: #7A6470;
+    --palette-accent-primary: #EC4899;
+    --palette-accent-secondary: #F472B6;
+    --palette-highlight: #FBCFE8;
+    --palette-success: #10B981;
+  }
+
   body {
     @apply bg-palette-background text-palette-text-primary;
   }
 }
+

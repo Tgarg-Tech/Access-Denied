@@ -6,24 +6,25 @@ export default {
     extend: {
       colors: {
         palette: {
-          background: '#FFF7FB',
-          section: '#FDEEF5',
-          card: '#FFFFFF',
-          border: '#F3D6E4',
+          background: 'var(--palette-background)',
+          section: 'var(--palette-section)',
+          card: 'var(--palette-card)',
+          border: 'var(--palette-border)',
           text: {
-            primary: '#3A2A33',
-            secondary: '#7A6470',
+            primary: 'var(--palette-text-primary)',
+            secondary: 'var(--palette-text-secondary)',
           },
           accent: {
-            primary: '#EC4899',
-            secondary: '#F472B6',
+            primary: 'var(--palette-accent-primary)',
+            secondary: 'var(--palette-accent-secondary)',
           },
-          highlight: '#FBCFE8',
-          success: '#10B981',
+          highlight: 'var(--palette-highlight)',
+          success: 'var(--palette-success)',
         },
       },
     },
   },
   plugins: [],
 };
+
 
