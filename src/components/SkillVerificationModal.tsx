@@ -94,7 +94,7 @@ export function SkillVerificationModal({ isOpen, onClose }: SkillVerificationMod
             <div>
               <label className="flex items-center text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
                 <Link2 className="w-5 h-5 mr-2 text-blue-500" />
-                LinkedIn Profile (Optional)
+                LinkedIn Profile
               </label>
               <div className="relative">
                 <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />

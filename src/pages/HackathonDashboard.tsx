@@ -1,6 +1,13 @@
-import { motion } from 'framer-motion';
-import { Search, Filter, Calendar, Users, DollarSign, ArrowRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { motion } from "framer-motion";
+import {
+  Search,
+  Filter,
+  Calendar,
+  Users,
+  DollarSign,
+  ArrowRight,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface HackathonDashboardProps {
   onNavigate: (page: string, hackathonId?: string) => void;
@@ -8,92 +15,108 @@ interface HackathonDashboardProps {
 
 const hackathons = [
   {
-    id: '1',
-    title: 'TechCrunch Disrupt 2024',
-    status: 'Active',
-    prize: '$100,000',
-    date: 'May 15-17, 2024',
-    teamSize: '2-4 members',
+    id: "1",
+    title: "TechCrunch Disrupt 2024",
+    status: "Active",
+    prize: "$100,000",
+    date: "May 15-17, 2024",
+    teamSize: "2-4 members",
     participants: 1250,
-    image: 'https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
-    id: '2',
-    title: 'AI Innovation Challenge',
-    status: 'Active',
-    prize: '$75,000',
-    date: 'May 20-22, 2024',
-    teamSize: '3-5 members',
+    id: "2",
+    title: "AI Innovation Challenge",
+    status: "Active",
+    prize: "$75,000",
+    date: "May 20-22, 2024",
+    teamSize: "3-5 members",
     participants: 980,
-    image: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
-    id: '3',
-    title: 'Web3 Builder Summit',
-    status: 'Upcoming',
-    prize: '$50,000',
-    date: 'June 1-3, 2024',
-    teamSize: '2-5 members',
+    id: "3",
+    title: "Web3 Builder Summit",
+    status: "Upcoming",
+    prize: "$50,000",
+    date: "June 1-3, 2024",
+    teamSize: "2-5 members",
     participants: 750,
-    image: 'https://images.pexels.com/photos/5474289/pexels-photo-5474289.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/5474289/pexels-photo-5474289.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
-    id: '4',
-    title: 'Healthcare Innovation Hack',
-    status: 'Active',
-    prize: '$60,000',
-    date: 'May 18-20, 2024',
-    teamSize: '3-6 members',
+    id: "4",
+    title: "Healthcare Innovation Hack",
+    status: "Active",
+    prize: "$60,000",
+    date: "May 18-20, 2024",
+    teamSize: "3-6 members",
     participants: 620,
-    image: 'https://images.pexels.com/photos/5989928/pexels-photo-5989928.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/5989928/pexels-photo-5989928.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
-    id: '5',
-    title: 'Climate Tech Hackathon',
-    status: 'Upcoming',
-    prize: '$80,000',
-    date: 'June 10-12, 2024',
-    teamSize: '2-4 members',
+    id: "5",
+    title: "Climate Tech Hackathon",
+    status: "Upcoming",
+    prize: "$80,000",
+    date: "June 10-12, 2024",
+    teamSize: "2-4 members",
     participants: 890,
-    image: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
-    id: '6',
-    title: 'FinTech Revolution 2024',
-    status: 'Upcoming',
-    prize: '$120,000',
-    date: 'June 15-17, 2024',
-    teamSize: '3-5 members',
+    id: "6",
+    title: "FinTech Revolution 2024",
+    status: "Upcoming",
+    prize: "$120,000",
+    date: "June 15-17, 2024",
+    teamSize: "3-5 members",
     participants: 1100,
-    image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      "https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
 ];
 
 export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     const setNavHeight = () => {
-      const nav = document.querySelector('nav');
+      const nav = document.querySelector("nav");
       const navHeight = nav ? nav.getBoundingClientRect().height : 64;
-      document.documentElement.style.setProperty('--nav-height', `${navHeight}px`);
+      document.documentElement.style.setProperty(
+        "--nav-height",
+        `${navHeight}px`,
+      );
     };
 
     setNavHeight();
-    window.addEventListener('resize', setNavHeight);
-    return () => window.removeEventListener('resize', setNavHeight);
+    window.addEventListener("resize", setNavHeight);
+    return () => window.removeEventListener("resize", setNavHeight);
   }, []);
 
-  const filteredHackathons = hackathons.filter(h => {
-    const matchesSearch = h.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || h.status === statusFilter;
+  const filteredHackathons = hackathons.filter((h) => {
+    const matchesSearch = h.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "All" || h.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24">
-<div id="hackathon-search-bar" className="relative z-40 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10 py-6">        <div className="max-w-7xl mx-auto px-6">
+      <div
+        id="hackathon-search-bar"
+        className="relative z-40 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10 py-6"
+      >
+        {" "}
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
@@ -109,14 +132,14 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
             <div className="flex items-center gap-3">
               <Filter className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
               <div className="flex gap-2">
-                {['All', 'Active', 'Upcoming'].map((status) => (
+                {["All", "Active", "Upcoming"].map((status) => (
                   <button
                     key={status}
                     onClick={() => setStatusFilter(status)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       statusFilter === status
-                        ? 'bg-gradient-to-r from-violet-500 to-blue-500 text-white'
-                        : 'bg-white dark:bg-[#121A2B] text-[#64748B] dark:text-[#94A3B8] border border-black/10 dark:border-white/10 hover:border-violet-500'
+                        ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white"
+                        : "bg-white dark:bg-[#121A2B] text-[#64748B] dark:text-[#94A3B8] border border-black/10 dark:border-white/10 hover:border-violet-500"
                     }`}
                   >
                     {status}
@@ -160,9 +183,9 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
                 <div className="absolute top-4 left-4">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      hackathon.status === 'Active'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-blue-500 text-white'
+                      hackathon.status === "Active"
+                        ? "bg-green-500 text-white"
+                        : "bg-blue-500 text-white"
                     }`}
                   >
                     {hackathon.status}
@@ -195,7 +218,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
 
                 <motion.button
                   whileHover={{ x: 5 }}
-                  onClick={() => onNavigate('details', hackathon.id)}
+                  onClick={() => onNavigate("details", hackathon.id)}
                   className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 font-medium hover:bg-violet-500/20 transition-colors"
                 >
                   <span>View Details</span>
