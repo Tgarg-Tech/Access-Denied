@@ -10,6 +10,9 @@ import {
   Rocket,
   CheckCircle2,
   Orbit,
+  Twitter,
+  Linkedin,
+  Github,
 } from "lucide-react";
 
 interface LandingPageProps {
@@ -380,6 +383,44 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                 <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Know team gaps early with role health and readiness signals.</p>
               </div>
             </div>
+          </div>
+
+          <div
+            id="about"
+            className="mb-32"
+            style={{ scrollMarginTop: "80px" }}
+          >
+            <div className="ambient-line h-px mb-14" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center mb-10"
+            >
+              <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+                About HackMate
+              </h2>
+              <p className="text-lg text-[#5f6f97] dark:text-[#a8b4d8] max-w-3xl mx-auto leading-relaxed">
+                HackMate was built by a passionate team of developers who experienced the friction of hackathon team formation firsthand. Our platform leverages transparency, compatibility scoring, and verified skill proof to ensure that every participant finds their perfect squad. We believe that great chemistry leads to great products.
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="flex justify-center gap-6"
+            >
+              <a href="https://twitter.com/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+                <Twitter className="w-6 h-6" />
+              </a>
+              <a href="https://linkedin.com/company/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+                <Linkedin className="w-6 h-6" />
+              </a>
+              <a href="https://github.com/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#333]/10 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+                <Github className="w-6 h-6" />
+              </a>
+            </motion.div>
           </div>
 
           <motion.div
