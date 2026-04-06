@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import {
   Users,
-  Zap,
   Shield,
   Target,
   ArrowRight,
   Sparkles,
   Trophy,
   Search,
+  Rocket,
+  CheckCircle2,
+  Orbit,
 } from "lucide-react";
 
 interface LandingPageProps {
@@ -15,30 +17,40 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ onNavigate }: LandingPageProps) {
+  const heroChips = [
+    "AI Team Chemistry",
+    "Role-fit Signals",
+    "Portfolio Proof",
+  ];
+
   const features = [
     {
       icon: Search,
       title: "Smart Matching",
       description:
         "AI-powered algorithm matches you with teammates based on skills, interests, and compatibility.",
+      accent: "from-[#ff7e4c] to-[#ff4f86]",
     },
     {
       icon: Shield,
       title: "Verified Skills",
       description:
         "Trust your team with skill verification through GitHub, portfolios, and certificates.",
+      accent: "from-[#4f8cff] to-[#3de0ff]",
     },
     {
       icon: Target,
       title: "Role-Based Search",
       description:
         "Find the perfect complement to your team with targeted role-based recommendations.",
+      accent: "from-[#8f56ff] to-[#3de0ff]",
     },
     {
       icon: Trophy,
       title: "Track Success",
       description:
         "Monitor team readiness scores and ensure you have all the skills needed to win.",
+      accent: "from-[#f96c6c] to-[#ffb15c]",
     },
   ];
 
@@ -70,50 +82,121 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020]">
+    <div className="relative min-h-screen overflow-hidden landing-mesh">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 top-20 h-64 w-64 rounded-full bg-[#ff8f6f]/25 blur-3xl pulse-glow" />
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#6280ff]/25 blur-3xl pulse-glow" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-[#35d9ff]/20 blur-3xl pulse-glow" />
+        <div className="absolute right-[20%] top-[30%] h-44 w-44 rounded-full border border-white/30 dark:border-white/10" />
+      </div>
+
       <div className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-16"
           >
+            <div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-panel mb-6"
+              >
+                <Sparkles className="w-4 h-4 text-[#5e64ff]" />
+                <span className="text-sm font-semibold text-[#404ac7] dark:text-[#b7bdff]">
+                  Find Your Perfect Team
+                </span>
+              </motion.div>
+
+              <h1 className="font-display text-5xl md:text-7xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-6 leading-tight tracking-tight">
+                Build a
+                <br />
+                <span className="bg-gradient-to-r from-[#ff7e4c] via-[#6878ff] to-[#38d8ff] bg-clip-text text-transparent animate-text-shift">
+                  Winning Squad
+                </span>
+                <br />
+                in Minutes
+              </h1>
+
+              <p className="text-lg md:text-xl text-[#4e5a7d] dark:text-[#b0b9dc] mb-8 max-w-2xl leading-relaxed">
+                HackMate matches you with skilled builders that complement your
+                stack, your pace, and your hackathon goal. Stop searching.
+                Start shipping.
+              </p>
+
+              <div className="flex flex-wrap gap-3 mb-8">
+                {heroChips.map((chip) => (
+                  <span
+                    key={chip}
+                    className="px-4 py-2 rounded-full text-sm font-medium glass-panel text-[#4e5b85] dark:text-[#c1caeb]"
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => onNavigate("loading")}
+                  className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-[#ff7e4c] to-[#5f73ff] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#6878ff]/40 transition-all"
+                >
+                  <span>Get Started</span>
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+
+                <div className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full glass-panel text-[#42507d] dark:text-[#bdc6ea]">
+                  <CheckCircle2 className="w-4 h-4 text-[#38bdf8]" />
+                  <span>No team? We match in minutes.</span>
+                </div>
+              </div>
+            </div>
+
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+              className="relative"
             >
-              <Sparkles className="w-4 h-4 text-violet-500" />
-              <span className="text-sm font-medium text-violet-600 dark:text-violet-400">
-                Find Your Perfect Team
-              </span>
+              <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-br from-[#ff9b74]/70 via-[#7085ff]/60 to-[#42d9ff]/60 blur" />
+              <div className="relative rounded-[28px] glass-panel p-6 md:p-8 border-white/70 dark:border-white/15">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-sm text-[#56648f] dark:text-[#b8c2e4]">Live Team Readiness</p>
+                    <p className="font-display text-3xl text-[#1f2b53] dark:text-white font-bold">
+                      92%
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ff845b] to-[#6f7dff] flex items-center justify-center">
+                    <Orbit className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Frontend Engineer</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">Matched</span>
+                  </div>
+                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">ML Specialist</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-300">Suggested</span>
+                  </div>
+                  <div className="rounded-xl bg-white/70 dark:bg-white/5 p-3 border border-white/70 dark:border-white/10 flex items-center justify-between">
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Pitch Lead</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300">Open</span>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-[#ff7e4c] via-[#6e78ff] to-[#35d9ff] text-white">
+                  <p className="text-sm opacity-90">Recommended next action</p>
+                  <p className="font-semibold">Invite 2 top candidates to Team Orbit</p>
+                </div>
+              </div>
             </motion.div>
-
-            <h1 className="text-6xl md:text-7xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-6 leading-tight">
-              Win Hackathons with
-              <br />
-              <span className="bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent">
-                The Right Team
-              </span>
-            </h1>
-
-            <p className="text-xl text-[#64748B] dark:text-[#94A3B8] mb-10 max-w-2xl mx-auto leading-relaxed">
-              HackMate uses intelligent matching to connect you with skilled
-              teammates who share your goals. Build winning teams faster than
-              ever.
-            </p>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate("loading")}
-              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-violet-500/50 transition-all"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
           </motion.div>
 
           <motion.div
@@ -122,23 +205,23 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="grid md:grid-cols-3 gap-6 mb-32"
           >
-            <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
-              <div className="text-4xl font-bold text-violet-500 mb-2">
+            <div className="text-center p-8 rounded-2xl glass-panel shadow-lg shadow-[#6472ff]/10 gradient-border-card">
+              <div className="font-display text-4xl font-bold text-[#6878ff] mb-2">
                 10K+
               </div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">
+              <div className="text-[#5f6f97] dark:text-[#a8b4d8]">
                 Active Developers
               </div>
             </div>
-            <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
-              <div className="text-4xl font-bold text-blue-500 mb-2">500+</div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">
+            <div className="text-center p-8 rounded-2xl glass-panel shadow-lg shadow-[#35d9ff]/10 gradient-border-card">
+              <div className="font-display text-4xl font-bold text-[#3bbef8] mb-2">500+</div>
+              <div className="text-[#5f6f97] dark:text-[#a8b4d8]">
                 Hackathons Listed
               </div>
             </div>
-            <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
-              <div className="text-4xl font-bold text-violet-500 mb-2">95%</div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">
+            <div className="text-center p-8 rounded-2xl glass-panel shadow-lg shadow-[#ff8f6f]/10 gradient-border-card">
+              <div className="font-display text-4xl font-bold text-[#ff8158] mb-2">95%</div>
+              <div className="text-[#5f6f97] dark:text-[#a8b4d8]">
                 Match Success Rate
               </div>
             </div>
@@ -149,16 +232,17 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             className="mb-32"
             style={{ scrollMarginTop: "80px" }}
           >
+            <div className="ambient-line h-px mb-14" />
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+              <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 How It Works
               </h2>
-              <p className="text-lg text-[#64748B] dark:text-[#94A3B8]">
+              <p className="text-lg text-[#5f6f97] dark:text-[#a8b4d8]">
                 Four simple steps to finding your dream team
               </p>
             </motion.div>
@@ -171,15 +255,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 hover:border-violet-500/50 transition-colors"
+                  className="relative p-8 rounded-2xl glass-panel transition-transform duration-300 hover:-translate-y-1"
                 >
-                  <div className="text-6xl font-bold text-violet-500/10 dark:text-violet-500/20 mb-4">
+                  <div className="font-display text-6xl font-bold text-[#5f73ff]/15 dark:text-[#7f89ff]/25 mb-4">
                     {step.number}
                   </div>
                   <h3 className="text-xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                  <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed">
                     {step.description}
                   </p>
                 </motion.div>
@@ -198,15 +282,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+              <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 Powerful Features
               </h2>
-              <p className="text-lg text-[#64748B] dark:text-[#94A3B8]">
+              <p className="text-lg text-[#5f6f97] dark:text-[#a8b4d8]">
                 Everything you need to build and manage winning teams
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -216,20 +300,46 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 hover:shadow-lg hover:shadow-violet-500/10 transition-all"
+                    className="p-8 rounded-2xl glass-panel hover:shadow-lg hover:shadow-[#6472ff]/10 transition-all gradient-border-card"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center mb-6">
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.accent} flex items-center justify-center mb-6`}
+                    >
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-2xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
                       {feature.title}
                     </h3>
-                    <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                    <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed">
                       {feature.description}
                     </p>
                   </motion.div>
                 );
               })}
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
+                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#ff7d53] to-[#ff4f86] flex items-center justify-center mb-4">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Chemistry-first Matching</h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Beyond skills, we score communication style and collaboration rhythm.</p>
+              </div>
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
+                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#5f75ff] to-[#38d9ff] flex items-center justify-center mb-4">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Instant Team Drafts</h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Get ready-to-invite squads with balanced roles in one click.</p>
+              </div>
+              <div className="p-6 rounded-2xl glass-panel gradient-border-card">
+                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#9a5cff] to-[#5f75ff] flex items-center justify-center mb-4">
+                  <Rocket className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Launch-ready Tracking</h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Know team gaps early with role health and readiness signals.</p>
+              </div>
             </div>
           </div>
 
@@ -237,9 +347,14 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-12 rounded-3xl bg-gradient-to-br from-violet-500 to-blue-500"
+            className="text-center p-12 rounded-3xl bg-gradient-to-br from-[#ff7e4c] via-[#7d69ff] to-[#32d9ff] shadow-2xl shadow-[#6d76ff]/30"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <Rocket className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Find Your Team?
             </h2>
             <p className="text-white/90 text-lg mb-8">
@@ -249,7 +364,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate("loading")}
-              className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-xl hover:shadow-xl transition-all"
+              className="px-8 py-4 bg-white text-[#4f5af7] font-semibold rounded-xl hover:shadow-xl transition-all"
             >
               Start Matching Now
             </motion.button>

@@ -3,11 +3,8 @@ import {
   Moon,
   Sun,
   Users,
-  User,
   LogOut,
-  Bell,
   Settings,
-  Grid,
   ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,47 +56,31 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
     <motion.nav
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`fixed top-0 left-0 right-0 z-50 relative overflow-visible ${
-        theme === "dark"
-          ? "bg-gradient-to-r from-[#0F1B2E] via-[#132A45] to-[#0F1B2E]"
-          : "bg-gradient-to-r from-white via-slate-50 to-white"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 relative overflow-visible"
     >
       <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div
-          className={`absolute inset-0 ${
-            theme === "dark"
-              ? "bg-gradient-to-b from-violet-900/10 to-transparent"
-              : "bg-gradient-to-b from-violet-100/5 to-transparent"
-          }`}
-        />
-        <div
-          className={`absolute bottom-0 left-0 right-0 h-[1px] ${
-            theme === "dark"
-              ? "bg-gradient-to-r from-violet-500/30 via-violet-500/10 to-transparent"
-              : "bg-gradient-to-r from-violet-400/20 via-violet-400/5 to-transparent"
-          }`}
-        />
+        <div className="absolute inset-0 landing-mesh opacity-70" />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] ambient-line" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="flex items-center justify-between gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+        <div className="glass-panel rounded-2xl border border-white/70 dark:border-white/15 px-4 sm:px-5 py-3 flex items-center justify-between gap-4 sm:gap-6 shadow-lg shadow-[#6878ff]/10 overflow-visible">
           <div className="flex items-center gap-3">
             <button
               onClick={() => onNavigate("landing")}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-500/20">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-[#ff7e4c] to-[#5f73ff] shadow-lg shadow-[#6777ff]/25">
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
                 <div
-                  className={`text-lg font-extrabold ${theme === "dark" ? "text-white" : "text-slate-900"}`}
+                  className={`font-display text-lg font-extrabold tracking-tight ${theme === "dark" ? "text-white" : "text-slate-900"}`}
                 >
                   HackMate
                 </div>
                 <div
-                  className={`text-xs ${theme === "dark" ? "text-violet-300" : "text-violet-600"} -mt-0.5`}
+                  className={`text-xs ${theme === "dark" ? "text-[#aeb8e2]" : "text-[#596893]"} -mt-0.5`}
                 >
                   Build. Team. Ship.
                 </div>
@@ -111,10 +92,12 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
             <div className="hidden md:flex items-center gap-6">
               <button
                 onClick={() => onNavigate("landing")}
-                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
-                  theme === "dark"
-                    ? "text-gray-300 hover:text-white"
-                    : "text-slate-600 hover:text-slate-900"
+                className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
+                  currentPage === "landing"
+                    ? "bg-gradient-to-r from-[#ff7e4c]/20 to-[#5f73ff]/20 text-[#4c5cf4] dark:text-[#bfc7ff]"
+                    : theme === "dark"
+                      ? "text-gray-300 hover:text-white hover:bg-white/5"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                 }`}
               >
                 Home
@@ -122,10 +105,10 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
 
               <button
                 onClick={() => scrollToId("how-it-works")}
-                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
                   theme === "dark"
-                    ? "text-gray-300 hover:text-white"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                 }`}
               >
                 How it works
@@ -133,10 +116,10 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
 
               <button
                 onClick={() => scrollToId("features")}
-                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
                   theme === "dark"
-                    ? "text-gray-300 hover:text-white"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                 }`}
               >
                 Features
@@ -148,12 +131,12 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 <button
                   key={item.page}
                   onClick={() => onNavigate(item.page)}
-                  className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
                     currentPage === item.page
-                      ? "text-violet-400 bg-violet-500/10"
+                      ? "bg-gradient-to-r from-[#ff7e4c]/20 to-[#5f73ff]/20 text-[#4c5cf4] dark:text-[#bfc7ff]"
                       : theme === "dark"
-                        ? "text-gray-300 hover:text-white"
-                        : "text-slate-600 hover:text-slate-900"
+                        ? "text-gray-300 hover:text-white hover:bg-white/5"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                   }`}
                 >
                   {item.label}
@@ -162,10 +145,10 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
 
               <button
                 onClick={() => scrollToId("features")}
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
                   theme === "dark"
-                    ? "text-gray-300 hover:text-white"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                 }`}
               >
                 Features
@@ -179,15 +162,15 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
               onClick={toggleTheme}
               className={`p-2 rounded-lg transition-all ${
                 theme === "dark"
-                  ? "bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20"
-                  : "bg-slate-200 border border-slate-300 hover:bg-slate-300"
+                  ? "bg-white/5 border border-white/10 hover:bg-white/10"
+                  : "bg-white/75 border border-white hover:bg-white"
               }`}
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-violet-300" />
+                <Sun className="w-5 h-5 text-[#ffd785]" />
               ) : (
-                <Moon className="w-5 h-5 text-slate-600" />
+                <Moon className="w-5 h-5 text-[#4c5af4]" />
               )}
             </motion.button>
 
@@ -197,15 +180,15 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                   onClick={() => onNavigate("auth-login")}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
                     theme === "dark"
-                      ? "border-violet-500/30 text-violet-300 hover:bg-violet-500/10"
-                      : "border-violet-300 text-violet-700 hover:bg-violet-50"
+                      ? "border-white/15 text-[#c4cdf0] hover:bg-white/10"
+                      : "border-white text-[#4f5ef2] hover:bg-white"
                   }`}
                 >
                   Log In
                 </button>
                 <button
                   onClick={() => onNavigate("auth-signup")}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-500 to-blue-500 hover:opacity-90 transition-opacity"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#ff7e4c] to-[#5f73ff] hover:opacity-90 transition-opacity shadow-lg shadow-[#6676ff]/25"
                 >
                   Sign Up
                 </button>
@@ -215,10 +198,10 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsDropdownOpen((s) => !s)}
-                  className="flex items-center gap-2 rounded-full p-1.5 bg-gradient-to-br from-violet-500 to-blue-500 border border-violet-400/30 hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+                  className="flex items-center gap-2 rounded-full p-1.5 bg-gradient-to-br from-[#ff7e4c] to-[#5f73ff] border border-[#8c96ff]/40 hover:shadow-lg hover:shadow-[#6676ff]/30 transition-all"
                   aria-label="Open account menu"
                 >
-                  <span className="w-8 h-8 rounded-full bg-white/95 text-violet-700 font-bold text-sm flex items-center justify-center">
+                  <span className="w-8 h-8 rounded-full bg-white/95 text-[#4f5ef2] font-bold text-sm flex items-center justify-center">
                     {profileInitial}
                   </span>
                   <ChevronDown className="w-4 h-4 text-white" />
@@ -232,17 +215,17 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                       exit={{ opacity: 0, y: 8 }}
                       className={`absolute right-0 mt-3 w-48 md:w-56 rounded-xl shadow-2xl overflow-hidden border ${
                         theme === "dark"
-                          ? "shadow-black/40 bg-gradient-to-b from-[#17102a] to-[#0f172a] border-violet-500/20"
-                          : "shadow-slate-300/50 bg-gradient-to-b from-slate-50 to-white border-slate-200"
+                          ? "shadow-black/40 bg-gradient-to-b from-[#11182f]/95 to-[#0b1226]/95 border-[#8f9cff]/20"
+                          : "shadow-slate-300/50 bg-gradient-to-b from-[#f8f9ff] to-white border-white"
                       }`}
                     >
-                      <div className="h-1 bg-gradient-to-r from-violet-500 to-blue-500" />
+                      <div className="h-1 bg-gradient-to-r from-[#ff7e4c] via-[#5f73ff] to-[#38d8ff]" />
 
                       <div
-                        className={`p-4 border-b ${theme === "dark" ? "border-violet-500/10" : "border-slate-300/50"}`}
+                        className={`p-4 border-b ${theme === "dark" ? "border-white/10" : "border-slate-300/50"}`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff7e4c] to-[#5f73ff] flex items-center justify-center text-white font-bold text-lg">
                             {profileInitial}
                           </div>
                           <div>
@@ -268,11 +251,11 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                           }}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
                             theme === "dark"
-                              ? "hover:bg-violet-500/10 text-gray-200"
-                              : "hover:bg-slate-200 text-slate-700"
+                              ? "hover:bg-white/10 text-gray-200"
+                              : "hover:bg-slate-100 text-slate-700"
                           }`}
                         >
-                          <span className="w-9 h-9 rounded-md flex items-center justify-center bg-gradient-to-br from-violet-500 to-blue-500 text-white">
+                          <span className="w-9 h-9 rounded-md flex items-center justify-center bg-gradient-to-br from-[#ff7e4c] to-[#5f73ff] text-white">
                             <Settings className="w-4 h-4" />
                           </span>
                           My Profile
@@ -280,7 +263,7 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                       </div>
 
                       <div
-                        className={`px-3 py-3 border-t ${theme === "dark" ? "border-violet-500/10" : "border-slate-300/50"}`}
+                        className={`px-3 py-3 border-t ${theme === "dark" ? "border-white/10" : "border-slate-300/50"}`}
                       >
                         <button
                           onClick={async () => {
