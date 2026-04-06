@@ -9,6 +9,7 @@ import {
   Settings,
   Grid,
   ChevronDown,
+  Trophy,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
@@ -288,6 +289,25 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                             <Settings className="w-4 h-4" />
                           </span>
                           My Profile
+                        </button>
+                        <button
+                          onClick={() => {
+                            onNavigate("my-profile");
+                            setIsDropdownOpen(false);
+                            setTimeout(() => {
+                              document.getElementById('past-hackathons')?.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
+                            theme === "dark"
+                              ? "hover:bg-violet-500/10 text-gray-200"
+                              : "hover:bg-slate-200 text-slate-700"
+                          }`}
+                        >
+                          <span className="w-9 h-9 rounded-md flex items-center justify-center bg-gradient-to-br from-yellow-500/20 to-orange-500/20 text-yellow-600">
+                            <Trophy className="w-4 h-4" />
+                          </span>
+                          My Hackathons
                         </button>
                       </div>
 

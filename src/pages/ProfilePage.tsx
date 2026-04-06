@@ -472,7 +472,9 @@ export function ProfilePage() {
         </motion.div>
 
         {/* ===== Past Hackathons Section ===== */}
-        <PastHackathonsSection />
+        <div id="past-hackathons">
+          <PastHackathonsSection />
+        </div>
       </div>
     </div>
   );
