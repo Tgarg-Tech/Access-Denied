@@ -81,6 +81,18 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 <Moon className="w-5 h-5 text-[#0F172A]" />
               )}
             </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onNavigate("team")}
+              className={`p-2 rounded-lg border transition-colors ${
+                currentPage === "team"
+                  ? "bg-violet-500 border-violet-500 text-white"
+                  : "bg-white dark:bg-[#121A2B] border-black/10 dark:border-white/10 hover:border-violet-500 dark:hover:border-violet-500 text-[#0F172A] dark:text-[#F8FAFC]"
+              }`}
+              aria-label="Team"
+            >
+              <Users className="w-5 h-5" />
+            </motion.button>
             <div className="relative">
               <motion.button
                 whileTap={{ scale: 0.95 }}
