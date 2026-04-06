@@ -1,0 +1,7 @@
+package-lock.json
+src/App.tsx
+src/components/Navbar.tsx
+src/main.tsx
+src/pages/LandingPage.tsx
+src/pages/profile.jsx
+tsconfig.app.json

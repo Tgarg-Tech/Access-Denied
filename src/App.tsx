@@ -6,6 +6,7 @@ import { HackathonDashboard } from "./pages/HackathonDashboard";
 import { HackathonDetails } from "./pages/HackathonDetails";
 import { MatchingPage } from "./pages/MatchingPage";
 import { TeamPage } from "./pages/TeamPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import Loading from "./pages/loading.jsx";
 import Profile from "./pages/profile.jsx";
 import Home from "./pages/home.jsx";
@@ -15,10 +16,12 @@ type Page =
   | "loading"
   | "profile"
   | "home"
+  | "my-profile"
   | "dashboard"
   | "details"
   | "matching"
   | "team";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("landing");
@@ -46,11 +49,12 @@ function App() {
       )}
       {currentPage === "profile" && (
         <Profile
-          onComplete={() => handleNavigate("home")}
+          onComplete={() => handleNavigate("my-profile")}
           onBack={() => handleNavigate("landing")}
         />
       )}
       {currentPage === "home" && <Home onNavigate={handleNavigate} />}
+      {currentPage === "my-profile" && <ProfilePage />}
       {currentPage === "dashboard" && (
         <HackathonDashboard onNavigate={handleNavigate} />
       )}
