@@ -3,7 +3,7 @@ import { Shield, Github, Linkedin, Mail, X, Check, Star } from 'lucide-react';
 import { useState } from 'react';
 
 interface MatchingPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, id?: string) => void;
 }
 
 const teammates = [
@@ -211,14 +211,18 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
         >
           <div className="p-8">
             <div className="flex items-start gap-6 mb-8">
-              <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                className="w-24 h-24 rounded-2xl object-cover"
-              />
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-24 h-24 rounded-2xl object-cover cursor-pointer hover:ring-4 hover:ring-palette-accent-primary/20 transition-all"
+                  onClick={() => onNavigate('userProfileView', currentUser.id)}
+                />
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-palette-text-primary dark:text-palette-background">
+                  <h2 
+                    className="text-2xl font-bold text-palette-text-primary dark:text-palette-background cursor-pointer hover:text-palette-accent-primary transition-colors"
+                    onClick={() => onNavigate('userProfileView', currentUser.id)}
+                  >
                     {currentUser.name}
                   </h2>
                   {currentUser.verified && (

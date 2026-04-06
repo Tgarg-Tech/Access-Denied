@@ -9,6 +9,7 @@ import { MatchingPage } from "./pages/MatchingPage";
 import { TeamPage } from "./pages/TeamPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { AuthPage } from "./pages/AuthPage";
+import UserProfileViewPage from "./pages/UserProfileViewPage";
 // @ts-ignore
 import Loading from "./pages/loading";
 // @ts-ignore
@@ -31,6 +32,7 @@ type Page =
   | "dashboard"
   | "details"
   | "matching"
+  | "userProfileView"
   | "team";
 
 const PROTECTED_PAGES: Page[] = [
@@ -41,6 +43,7 @@ const PROTECTED_PAGES: Page[] = [
   "dashboard",
   "details",
   "matching",
+  "userProfileView",
   "team",
 ];
 
@@ -53,6 +56,7 @@ function App() {
 
   const [currentPage, setCurrentPage] = useState<Page>("landing");
   const [selectedHackathonId, setSelectedHackathonId] = useState<string>("1");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [isProfileLookupReady, setIsProfileLookupReady] = useState(false);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
@@ -167,7 +171,13 @@ function App() {
       }
       const [pagePart, idPart] = raw.split("/");
       setCurrentPage(pagePart as Page);
-      if (idPart) setSelectedHackathonId(idPart);
+      if (idPart) {
+        if (pagePart === "userProfileView") {
+          setSelectedUserId(idPart);
+        } else {
+          setSelectedHackathonId(idPart);
+        }
+      }
     };
 
     // Initialize from current hash
@@ -178,16 +188,20 @@ function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  const handleNavigate = useCallback((page: string, hackathonId?: string) => {
+  const handleNavigate = useCallback((page: string, id?: string) => {
     setCurrentPage(page as Page);
-    if (hackathonId) {
-      setSelectedHackathonId(hackathonId);
+    if (id) {
+      if (page === "userProfileView") {
+        setSelectedUserId(id);
+      } else {
+        setSelectedHackathonId(id);
+      }
     }
 
     // update URL hash so the browser shows the current page and back/forward works
     try {
-      const url = hackathonId ? `#${page}/${hackathonId}` : `#${page}`;
-      window.history.pushState({ page, hackathonId }, "", url);
+      const url = id ? `#${page}/${id}` : `#${page}`;
+      window.history.pushState({ page, id }, "", url);
     } catch {}
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -325,6 +339,12 @@ function App() {
       )}
       {currentPage === "matching" && (
         <MatchingPage onNavigate={handleNavigate} />
+      )}
+      {currentPage === "userProfileView" && (
+        <UserProfileViewPage
+          userId={selectedUserId}
+          onNavigate={handleNavigate}
+        />
       )}
       {currentPage === "team" && (
         <TeamPage
