@@ -1,84 +1,193 @@
-import { useState } from "react";
-import { Moon, Sun, Users, User, LogOut } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import {
+  Moon,
+  Sun,
+  Users,
+  User,
+  LogOut,
+  Bell,
+  Settings,
+  Grid,
+  ChevronDown,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
+import { useProfile } from "../contexts/ProfileContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface NavbarProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, hackathonId?: string) => void;
   currentPage: string;
 }
 
 export function Navbar({ onNavigate, currentPage }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
+  const { profile, logout } = useProfile();
+  const { user, logout: signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const isPublicNav =
+    !user || currentPage === "landing" || currentPage.startsWith("auth-");
+  const profileInitial = (
+    profile.fullName?.trim().charAt(0) || "U"
+  ).toUpperCase();
+
+  useEffect(() => {
+    function handleDocumentClick(e: MouseEvent) {
+      if (!dropdownRef.current) return;
+      if (isDropdownOpen && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleDocumentClick);
+    return () => document.removeEventListener("mousedown", handleDocumentClick);
+  }, [isDropdownOpen]);
+
+  const mainNav = [
+    { label: "Hackathons", page: "dashboard" },
+    { label: "Matching", page: "matching" },
+    { label: "Teams", page: "team" },
+  ];
 
   const scrollToId = (id: string) => {
-    try {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        onNavigate("landing");
-      }
-    } catch (e) {
-      onNavigate("landing");
-    }
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else onNavigate("landing");
   };
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10"
+      initial={{ y: -24, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className={`fixed top-0 left-0 right-0 z-50 relative overflow-visible ${
+        theme === "dark"
+          ? "bg-gradient-to-r from-[#0F1B2E] via-[#132A45] to-[#0F1B2E]"
+          : "bg-gradient-to-r from-white via-slate-50 to-white"
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => onNavigate("landing")}
-            className="flex items-center space-x-2 group"
-          >
-            <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500 to-blue-500">
-              <Users className="w-5 h-5 text-white" />
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div
+          className={`absolute inset-0 ${
+            theme === "dark"
+              ? "bg-gradient-to-b from-violet-900/10 to-transparent"
+              : "bg-gradient-to-b from-violet-100/5 to-transparent"
+          }`}
+        />
+        <div
+          className={`absolute bottom-0 left-0 right-0 h-[1px] ${
+            theme === "dark"
+              ? "bg-gradient-to-r from-violet-500/30 via-violet-500/10 to-transparent"
+              : "bg-gradient-to-r from-violet-400/20 via-violet-400/5 to-transparent"
+          }`}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-3">
+        <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onNavigate("landing")}
+              className="flex items-center gap-3 group"
+            >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-500/20">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div className="hidden sm:block">
+                <div
+                  className={`text-lg font-extrabold ${theme === "dark" ? "text-white" : "text-slate-900"}`}
+                >
+                  HackMate
+                </div>
+                <div
+                  className={`text-xs ${theme === "dark" ? "text-violet-300" : "text-violet-600"} -mt-0.5`}
+                >
+                  Build. Team. Ship.
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {isPublicNav ? (
+            <div className="hidden md:flex items-center gap-6">
+              <button
+                onClick={() => onNavigate("landing")}
+                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  theme === "dark"
+                    ? "text-gray-300 hover:text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Home
+              </button>
+
+              <button
+                onClick={() => scrollToId("how-it-works")}
+                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  theme === "dark"
+                    ? "text-gray-300 hover:text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                How it works
+              </button>
+
+              <button
+                onClick={() => scrollToId("features")}
+                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  theme === "dark"
+                    ? "text-gray-300 hover:text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Features
+              </button>
             </div>
-            <span className="text-xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-              DevSath
-            </span>
-          </button>
+          ) : (
+            <div className="hidden md:flex items-center gap-6">
+              {mainNav.map((item) => (
+                <button
+                  key={item.page}
+                  onClick={() => onNavigate(item.page)}
+                  className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                    currentPage === item.page
+                      ? "text-violet-400 bg-violet-500/10"
+                      : theme === "dark"
+                        ? "text-gray-300 hover:text-white"
+                        : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
 
-          <div className="flex items-center space-x-6">
-            {currentPage === "landing" && (
-              <>
-                <button
-                  onClick={() => onNavigate("dashboard")}
-                  className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
-                >
-                  Hackathons
-                </button>
-                <button
-                  onClick={() => scrollToId("how-it-works")}
-                  className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
-                >
-                  How It Works
-                </button>
-                <button
-                  onClick={() => scrollToId("features")}
-                  className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
-                >
-                  Features
-                </button>
-              </>
-            )}
+              <button
+                onClick={() => scrollToId("features")}
+                className={`text-sm font-medium transition-colors ${
+                  theme === "dark"
+                    ? "text-gray-300 hover:text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Features
+              </button>
+            </div>
+          )}
 
+          <div className="flex items-center gap-3">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 hover:border-violet-500 dark:hover:border-violet-500 transition-colors"
+              className={`p-2 rounded-lg transition-all ${
+                theme === "dark"
+                  ? "bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20"
+                  : "bg-slate-200 border border-slate-300 hover:bg-slate-300"
+              }`}
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-[#F8FAFC]" />
+                <Sun className="w-5 h-5 text-violet-300" />
               ) : (
-                <Moon className="w-5 h-5 text-[#0F172A]" />
+                <Moon className="w-5 h-5 text-slate-600" />
               )}
             </motion.button>
             <motion.button
@@ -93,52 +202,120 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
             >
               <Users className="w-5 h-5" />
             </motion.button>
-            <div className="relative">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className={`p-2 rounded-lg border transition-colors ${
-                  currentPage === "my-profile" || isDropdownOpen
-                    ? "bg-violet-500 border-violet-500 text-white"
-                    : "bg-white dark:bg-[#121A2B] border-black/10 dark:border-white/10 hover:border-violet-500 dark:hover:border-violet-500 text-[#0F172A] dark:text-[#F8FAFC]"
-                }`}
-                aria-label="Profile"
-              >
-                <User className="w-5 h-5" />
-              </motion.button>
-              
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 rounded-xl shadow-xl overflow-hidden py-1"
-                  >
-                    <button
-                      onClick={() => {
-                        onNavigate("my-profile");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#0B1020] transition-colors"
+
+            {!user ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => onNavigate("auth-login")}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
+                    theme === "dark"
+                      ? "border-violet-500/30 text-violet-300 hover:bg-violet-500/10"
+                      : "border-violet-300 text-violet-700 hover:bg-violet-50"
+                  }`}
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => onNavigate("auth-signup")}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-500 to-blue-500 hover:opacity-90 transition-opacity"
+                >
+                  Sign Up
+                </button>
+              </div>
+            ) : (
+              <div className="relative" ref={dropdownRef}>
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsDropdownOpen((s) => !s)}
+                  className="flex items-center gap-2 rounded-full p-1.5 bg-gradient-to-br from-violet-500 to-blue-500 border border-violet-400/30 hover:shadow-lg hover:shadow-violet-500/30 transition-all"
+                  aria-label="Open account menu"
+                >
+                  <span className="w-8 h-8 rounded-full bg-white/95 text-violet-700 font-bold text-sm flex items-center justify-center">
+                    {profileInitial}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-white" />
+                </motion.button>
+
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className={`absolute right-0 mt-3 w-48 md:w-56 rounded-xl shadow-2xl overflow-hidden border ${
+                        theme === "dark"
+                          ? "shadow-black/40 bg-gradient-to-b from-[#17102a] to-[#0f172a] border-violet-500/20"
+                          : "shadow-slate-300/50 bg-gradient-to-b from-slate-50 to-white border-slate-200"
+                      }`}
                     >
-                      <User className="w-4 h-4" />
-                      My Profile
-                    </button>
-                    <button
-                      onClick={() => {
-                        onNavigate("landing");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      <div className="h-1 bg-gradient-to-r from-violet-500 to-blue-500" />
+
+                      <div
+                        className={`p-4 border-b ${theme === "dark" ? "border-violet-500/10" : "border-slate-300/50"}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                            {profileInitial}
+                          </div>
+                          <div>
+                            <div
+                              className={`font-semibold ${theme === "dark" ? "text-white" : "text-slate-900"}`}
+                            >
+                              {profile.fullName}
+                            </div>
+                            <div
+                              className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-slate-500"}`}
+                            >
+                              {profile.email}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 space-y-2">
+                        <button
+                          onClick={() => {
+                            onNavigate("my-profile");
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
+                            theme === "dark"
+                              ? "hover:bg-violet-500/10 text-gray-200"
+                              : "hover:bg-slate-200 text-slate-700"
+                          }`}
+                        >
+                          <span className="w-9 h-9 rounded-md flex items-center justify-center bg-gradient-to-br from-violet-500 to-blue-500 text-white">
+                            <Settings className="w-4 h-4" />
+                          </span>
+                          My Profile
+                        </button>
+                      </div>
+
+                      <div
+                        className={`px-3 py-3 border-t ${theme === "dark" ? "border-violet-500/10" : "border-slate-300/50"}`}
+                      >
+                        <button
+                          onClick={async () => {
+                            await signOut();
+                            logout();
+                            onNavigate("landing");
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2 text-sm rounded-md px-3 py-2 transition-colors ${
+                            theme === "dark"
+                              ? "text-red-400 hover:bg-red-500/10"
+                              : "text-red-600 hover:bg-red-100"
+                          }`}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
       </div>

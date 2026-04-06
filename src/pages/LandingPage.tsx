@@ -100,7 +100,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </h1>
 
             <p className="text-xl text-[#64748B] dark:text-[#94A3B8] mb-10 max-w-2xl mx-auto leading-relaxed">
-              DevSath uses intelligent matching to connect you with skilled
+              HackMate uses intelligent matching to connect you with skilled
               teammates who share your goals. Build winning teams faster than
               ever.
             </p>
@@ -243,7 +243,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               Ready to Find Your Team?
             </h2>
             <p className="text-white/90 text-lg mb-8">
-              Join thousands of developers building winning teams on DevSath
+              Join thousands of developers building winning teams on HackMate
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

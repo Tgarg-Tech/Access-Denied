@@ -246,7 +246,7 @@ export default function Loading({ onDone, durationMs = 2600 }) {
               <div className="dm-brand-icon">
                 <Users className="w-5 h-5 text-white" />
               </div>
-              <span className="dm-brand-name">DevSath</span>
+              <span className="dm-brand-name">HackMate</span>
             </div>
           </div>
         </div>
