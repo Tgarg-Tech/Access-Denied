@@ -144,7 +144,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </motion.div>
 
-          <div id="how-it-works" className="mb-32">
+          <div
+            id="how-it-works"
+            className="mb-32"
+            style={{ scrollMarginTop: "80px" }}
+          >
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -183,7 +187,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </div>
 
-          <div id="features" className="mb-20">
+          <div
+            id="features"
+            className="mb-20"
+            style={{ scrollMarginTop: "80px" }}
+          >
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}

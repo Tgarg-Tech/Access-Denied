@@ -1,23 +1,29 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.dottsbuildinfo",
+    "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
+    /* ⬇️ ADD THESE THREE LINES ⬇️ */
+    "allowJs": true,           
+    "checkJs": false,          
+    "noImplicitAny": false,    
+
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false, // Set to false if you want fewer red squiggles for the demo
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]

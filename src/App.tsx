@@ -1,17 +1,27 @@
-import { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { SkillVerificationModal } from './components/SkillVerificationModal';
-import { LandingPage } from './pages/LandingPage';
-import { HackathonDashboard } from './pages/HackathonDashboard';
-import { HackathonDetails } from './pages/HackathonDetails';
-import { MatchingPage } from './pages/MatchingPage';
-import { TeamPage } from './pages/TeamPage';
-import { ProfilePage } from './pages/ProfilePage';
-import Loading from './pages/loading';
-import Profile from './pages/profile';
-import Home from './pages/home';
+import { useState } from "react";
+import { Navbar } from "./components/Navbar";
+import { SkillVerificationModal } from "./components/SkillVerificationModal";
+import { LandingPage } from "./pages/LandingPage";
+import { HackathonDashboard } from "./pages/HackathonDashboard";
+import { HackathonDetails } from "./pages/HackathonDetails";
+import { MatchingPage } from "./pages/MatchingPage";
+import { TeamPage } from "./pages/TeamPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import Loading from "./pages/loading.jsx";
+import Profile from "./pages/profile.jsx";
+import Home from "./pages/home.jsx";
 
-type Page = 'landing' | 'loading' | 'home' | 'profile' | 'my-profile' | 'dashboard' | 'details' | 'matching' | 'team';
+type Page =
+  | "landing"
+  | "loading"
+  | "profile"
+  | "home"
+  | "my-profile"
+  | "dashboard"
+  | "details"
+  | "matching"
+  | "team";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("landing");
@@ -44,9 +54,7 @@ function App() {
         />
       )}
       {currentPage === "home" && <Home onNavigate={handleNavigate} />}
-      
       {currentPage === "my-profile" && <ProfilePage />}
-
       {currentPage === "dashboard" && (
         <HackathonDashboard onNavigate={handleNavigate} />
       )}
