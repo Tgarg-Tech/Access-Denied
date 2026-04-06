@@ -5,7 +5,7 @@
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-**DevSath** is a focused web platform designed to help hackathon participants find, evaluate, and form high-performing teams quickly. By pairing participants based on technical skills, soft skills, interests, and missing roles, DevSath eliminates the friction of team formation and produces balanced, competitive groups.
+**DevSath**  is a focused web platform designed to help hackathon participants find, evaluate, and form high-performing teams quickly. By pairing participants based on technical skills, soft skills, interests, and missing roles, DevSath eliminates the friction of team formation and produces balanced, competitive groups.
 
 ---
 

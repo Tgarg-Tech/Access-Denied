@@ -1,38 +1,69 @@
-import { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { SkillVerificationModal } from './components/SkillVerificationModal';
-import { LandingPage } from './pages/LandingPage';
-import { HackathonDashboard } from './pages/HackathonDashboard';
-import { HackathonDetails } from './pages/HackathonDetails';
-import { MatchingPage } from './pages/MatchingPage';
-import { TeamPage } from './pages/TeamPage';
+import { useState } from "react";
+import { Navbar } from "./components/Navbar";
+import { SkillVerificationModal } from "./components/SkillVerificationModal";
+import { LandingPage } from "./pages/LandingPage";
+import { HackathonDashboard } from "./pages/HackathonDashboard";
+import { HackathonDetails } from "./pages/HackathonDetails";
+import { MatchingPage } from "./pages/MatchingPage";
+import { TeamPage } from "./pages/TeamPage";
+import Loading from "./pages/loading.jsx";
+import Profile from "./pages/profile.jsx";
+import Home from "./pages/home.jsx";
 
-type Page = 'landing' | 'dashboard' | 'details' | 'matching' | 'team';
+type Page =
+  | "landing"
+  | "loading"
+  | "profile"
+  | "home"
+  | "dashboard"
+  | "details"
+  | "matching"
+  | "team";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('landing');
-  const [selectedHackathonId, setSelectedHackathonId] = useState<string>('1');
+  const [currentPage, setCurrentPage] = useState<Page>("landing");
+  const [selectedHackathonId, setSelectedHackathonId] = useState<string>("1");
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
+  const showNavbar = !["loading", "profile", "home"].includes(currentPage);
 
   const handleNavigate = (page: string, hackathonId?: string) => {
     setCurrentPage(page as Page);
     if (hackathonId) {
       setSelectedHackathonId(hackathonId);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020]">
-      <Navbar onNavigate={handleNavigate} currentPage={currentPage} />
-
-      {currentPage === 'landing' && <LandingPage onNavigate={handleNavigate} />}
-      {currentPage === 'dashboard' && <HackathonDashboard onNavigate={handleNavigate} />}
-      {currentPage === 'details' && (
-        <HackathonDetails hackathonId={selectedHackathonId} onNavigate={handleNavigate} />
+      {showNavbar && (
+        <Navbar onNavigate={handleNavigate} currentPage={currentPage} />
       )}
-      {currentPage === 'matching' && <MatchingPage onNavigate={handleNavigate} />}
-      {currentPage === 'team' && (
+
+      {currentPage === "landing" && <LandingPage onNavigate={handleNavigate} />}
+      {currentPage === "loading" && (
+        <Loading onDone={() => handleNavigate("profile")} durationMs={2600} />
+      )}
+      {currentPage === "profile" && (
+        <Profile
+          onComplete={() => handleNavigate("home")}
+          onBack={() => handleNavigate("landing")}
+        />
+      )}
+      {currentPage === "home" && <Home onNavigate={handleNavigate} />}
+      {currentPage === "dashboard" && (
+        <HackathonDashboard onNavigate={handleNavigate} />
+      )}
+      {currentPage === "details" && (
+        <HackathonDetails
+          hackathonId={selectedHackathonId}
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentPage === "matching" && (
+        <MatchingPage onNavigate={handleNavigate} />
+      )}
+      {currentPage === "team" && (
         <TeamPage
           onNavigate={handleNavigate}
           onOpenSkillModal={() => setIsSkillModalOpen(true)}
