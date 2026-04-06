@@ -27,6 +27,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
+    if (!auth) {
+      setIsAuthReady(true);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser);
       setIsAuthReady(true);
@@ -36,10 +41,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
+    if (!auth) {
+      console.warn("Firebase auth is not configured.");
+      return;
+    }
     await signInWithPopup(auth, googleProvider);
   };
 
   const logout = async () => {
+    if (!auth) {
+      console.warn("Firebase auth is not configured.");
+      return;
+    }
     await signOut(auth);
   };
 

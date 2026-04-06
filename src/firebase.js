@@ -13,13 +13,38 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const hasFirebaseConfig = Boolean(
+  firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId,
+);
 
-// Export Auth for use in your components
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+let app = null;
+let analytics = null;
+let auth = null;
+let db = null;
+
+if (hasFirebaseConfig) {
+  app = initializeApp(firebaseConfig);
+
+  if (typeof window !== "undefined" && firebaseConfig.measurementId) {
+    try {
+      analytics = getAnalytics(app);
+    } catch (error) {
+      console.warn("Firebase analytics initialization failed.", error);
+    }
+  }
+
+  auth = getAuth(app);
+  db = getFirestore(app);
+} else {
+  console.warn(
+    "Firebase configuration is missing or incomplete. Firebase services are disabled.",
+  );
+}
+
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
+export { auth, db };
 export default app;
