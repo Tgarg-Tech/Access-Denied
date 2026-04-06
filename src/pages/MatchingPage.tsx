@@ -188,6 +188,8 @@ const yearIndex: Record<string, number> = {
   Graduate: 5,
 };
 
+const normalizeIdentifier = (value: string) => value.trim().toLowerCase();
+
 // ─── Role complementarity table ───────────────────────────────────────────────
 const roleBoost = (myRole: string, theirRole: string): number => {
   const complementary: Record<string, string[]> = {
@@ -228,7 +230,10 @@ function computeRating(candidate: Teammate): RatingBreakdown {
   const expScore = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
 
   // 5. Same college bonus
-  const collegeBonus = ME.college === candidate.college ? 1 : 0;
+  const collegeBonus =
+    normalizeIdentifier(ME.college) === normalizeIdentifier(candidate.college)
+      ? 1
+      : 0;
 
   // 6. Extra skill breadth (beyond complement, capped at 5)
   const extraSkills = Math.min(complement.length, 5);
@@ -338,9 +343,9 @@ function RatingBreakdownPanel({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 overflow-hidden"
+          className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 overflow-hidden dark:border-slate-700 dark:bg-slate-800"
         >
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-3">
+          <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3">
             Score Breakdown
           </p>
           <div className="space-y-2">
@@ -364,9 +369,9 @@ function RatingBreakdownPanel({
               );
             })}
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
-            <span className="text-[11px] text-slate-400">Raw score</span>
-            <span className="text-[12px] font-bold text-slate-700">{breakdown.raw} / 187</span>
+          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <span className="text-[11px] text-slate-400 dark:text-slate-400">Raw score</span>
+            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">{breakdown.raw} / 187</span>
           </div>
         </motion.div>
       )}
@@ -397,14 +402,14 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
   if (!currentUser || !breakdown || !col) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center bg-white px-6"
+        className="min-h-screen flex flex-col items-center justify-center bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 px-6"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6">
           <Users className="w-8 h-8 text-indigo-500" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">All caught up!</h2>
-        <p className="text-slate-500 mb-8 text-center max-w-xs">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">All caught up!</h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-8 text-center max-w-xs">
           You've reviewed everyone. {invitedUsers.length} invite{invitedUsers.length !== 1 ? "s" : ""} sent.
         </p>
         <button
@@ -419,7 +424,7 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
 
   return (
     <div
-      className="min-h-screen bg-white pt-24 pb-20"
+      className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 pt-24 pb-20"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {/* Google Font */}
@@ -428,8 +433,8 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Find Teammates</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Find Teammates</h1>
+          <p className="text-sm text-slate-400 dark:text-slate-400 mt-0.5">
             {teammates.length - currentIndex} profiles left · {invitedUsers.length} invited
           </p>
         </div>
@@ -461,11 +466,11 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction * -60 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="rounded-3xl border border-slate-100 bg-white shadow-sm overflow-hidden mb-4"
+            className="rounded-3xl border border-slate-100 bg-white shadow-sm overflow-hidden mb-4 dark:border-slate-800 dark:bg-slate-900"
             style={{ boxShadow: "0 2px 24px 0 rgba(0,0,0,0.06)" }}
           >
             {/* Top banner */}
-            <div className="h-24 bg-gradient-to-br from-slate-50 to-indigo-50 relative">
+            <div className="h-24 bg-gradient-to-br from-slate-50 to-indigo-50 relative dark:from-slate-900 dark:to-slate-950">
               <div
                 className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
                 style={{ background: col.bg, color: col.text }}
@@ -487,7 +492,7 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
 
               {/* Name + role */}
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold text-slate-900">{currentUser.name}</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{currentUser.name}</h2>
                 {currentUser.verified && (
                   <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-blue-50">
                     <Shield className="w-3 h-3 text-blue-500" />
@@ -496,14 +501,14 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                 )}
               </div>
               <p className="text-sm font-semibold text-indigo-500 mb-1">{currentUser.role}</p>
-              <p className="text-sm text-slate-500 mb-3">
+              <p className="text-sm text-slate-500 dark:text-slate-300 mb-3">
                 <span className="font-semibold" style={{ color: col.text }}>
                   {breakdown.score}/100
                 </span>{" "}match score
               </p>
 
               {/* College + year */}
-              <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
+              <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-400 mb-3">
                 <span className="flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
                   {currentUser.college}
@@ -512,14 +517,14 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                   <BookOpen className="w-3 h-3" />
                   {currentUser.year} year
                 </span>
-                {ME.college === currentUser.college && (
+                {normalizeIdentifier(ME.college) === normalizeIdentifier(currentUser.college) && (
                   <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-semibold">
                     Same college ✓
                   </span>
                 )}
               </div>
 
-              <p className="text-sm text-slate-500 leading-relaxed mb-5">{currentUser.bio}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-300 leading-relaxed mb-5">{currentUser.bio}</p>
 
               {/* Why matched */}
               <div className="mb-4">
@@ -603,9 +608,9 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
               {/* Score breakdown toggle */}
               <button
                 onClick={() => setShowBreakdown((v) => !v)}
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors mb-1"
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors mb-1 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
               >
-                <span className="flex items-center gap-2 text-sm font-semibold text-slate-600">
+                <span className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-200">
                   <Info className="w-4 h-4 text-indigo-400" />
                   Score breakdown
                 </span>
