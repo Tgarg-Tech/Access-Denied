@@ -1,20 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import { useProfile } from "../contexts/ProfileContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Profile({ onComplete, onBack }) {
-  const { updateProfile } = useProfile();
+  const { profile, updateProfile } = useProfile();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    college: "",
-    year: "",
-    role: "",
-    skills: [],
-    interests: [],
-    availability: "",
+    name: profile.fullName || user?.displayName || "",
+    email: profile.email || user?.email || "",
+    college: profile.college || "",
+    year: profile.collegeYear || "",
+    role: profile.preferredRole || "",
+    skills: profile.technicalSkills || [],
+    interests: profile.projectTypes || [],
+    availability: profile.availability || "",
   });
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      name: prev.name || profile.fullName || user?.displayName || "",
+      email: prev.email || profile.email || user?.email || "",
+      college: prev.college || profile.college || "",
+      year: prev.year || profile.collegeYear || "",
+      role: prev.role || profile.preferredRole || "",
+      skills: prev.skills.length ? prev.skills : profile.technicalSkills || [],
+      interests: prev.interests.length
+        ? prev.interests
+        : profile.projectTypes || [],
+      availability: prev.availability || profile.availability || "",
+    }));
+  }, [profile, user]);
 
   const skills = [
     "React",
