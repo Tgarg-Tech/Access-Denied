@@ -45,7 +45,7 @@ function App() {
 
       {currentPage === "landing" && <LandingPage onNavigate={handleNavigate} />}
       {currentPage === "loading" && (
-        <Loading onDone={() => handleNavigate("profile")} durationMs={2600} />
+        <Loading onDone={() => handleNavigate("dashboard")} durationMs={2600} />
       )}
       {currentPage === "profile" && (
         <Profile
