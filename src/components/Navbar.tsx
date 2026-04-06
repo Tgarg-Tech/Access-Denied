@@ -10,6 +10,7 @@ import {
   Grid,
   ChevronDown,
   Trophy,
+  Star,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
@@ -175,6 +176,19 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
           )}
 
           <div className="flex items-center gap-3">
+            {profile.pastHackathons?.length > 0 && (
+              <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
+                theme === 'dark' 
+                  ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' 
+                  : 'bg-yellow-50 border-yellow-200 text-yellow-600'
+              }`}>
+                <Star className="w-4 h-4 fill-current" />
+                <span className="text-sm font-bold">
+                  {(profile.pastHackathons.reduce((acc: number, h: any) => acc + (h.review?.averageRating || 0), 0) / profile.pastHackathons.length).toFixed(1)}
+                </span>
+              </div>
+            )}
+
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}

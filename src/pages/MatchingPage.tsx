@@ -14,6 +14,9 @@ const teammates = [
     avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400',
     verified: true,
     matchScore: 92,
+    pastRating: 4.8,
+    hackathonsCount: 12,
+    lastRole: 'Lead Frontend',
     skills: ['React', 'Node.js', 'Python', 'AWS'],
     interests: ['AI/ML', 'Cloud Computing', 'DevOps'],
     matchReasons: ['Skill Match', 'Interest Match'],
@@ -28,6 +31,9 @@ const teammates = [
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400',
     verified: true,
     matchScore: 88,
+    pastRating: 4.6,
+    hackathonsCount: 8,
+    lastRole: 'Product Designer',
     skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
     interests: ['Product Design', 'Mobile Apps', 'Accessibility'],
     matchReasons: ['Interest Match'],
@@ -42,6 +48,9 @@ const teammates = [
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
     verified: false,
     matchScore: 85,
+    pastRating: 4.2,
+    hackathonsCount: 4,
+    lastRole: 'ML Intern',
     skills: ['Python', 'TensorFlow', 'Data Analysis', 'SQL'],
     interests: ['Machine Learning', 'Data Visualization', 'AI'],
     matchReasons: ['Skill Match'],
@@ -56,6 +65,9 @@ const teammates = [
     avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=400',
     verified: true,
     matchScore: 90,
+    pastRating: 4.7,
+    hackathonsCount: 15,
+    lastRole: 'Backend Lead',
     skills: ['Java', 'Spring Boot', 'Docker', 'Kubernetes'],
     interests: ['Microservices', 'Cloud Architecture', 'DevOps'],
     matchReasons: ['Skill Match', 'Interest Match'],
@@ -194,7 +206,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
           className="rounded-3xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 overflow-hidden shadow-xl mb-8"
         >
           <div className="p-8">
-            <div className="flex items-start gap-6 mb-6">
+            <div className="flex items-start gap-6 mb-8">
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
@@ -215,19 +227,43 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                   )}
                 </div>
                 <p className="text-lg text-violet-500 font-medium mb-3">{currentUser.role}</p>
+                
+                {/* Performance Stats Bar */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Past Rating</p>
+                    <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
+                      <Star className="w-4 h-4 fill-current" />
+                      <span>{currentUser.pastRating}/5</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Hackathons</p>
+                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold">{currentUser.hackathonsCount}+</p>
+                  </div>
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Last Role</p>
+                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold text-xs truncate">{currentUser.lastRole}</p>
+                  </div>
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Match Score</p>
+                    <p className="text-violet-500 font-bold">{currentUser.matchScore}%</p>
+                  </div>
+                </div>
+
                 <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-4">
                   {currentUser.bio}
                 </p>
 
                 <div className="flex gap-3">
-                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors">
-                    <Github className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
+                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors group">
+                    <Github className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8] group-hover:text-violet-500" />
                   </button>
-                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors">
-                    <Linkedin className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
+                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors group">
+                    <Linkedin className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8] group-hover:text-violet-500" />
                   </button>
-                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors">
-                    <Mail className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
+                  <button className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 hover:border-violet-500 transition-colors group">
+                    <Mail className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8] group-hover:text-violet-500" />
                   </button>
                 </div>
               </div>
