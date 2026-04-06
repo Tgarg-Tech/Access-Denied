@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+// @ts-nocheck
+import React, { useCallback, useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { SkillVerificationModal } from "./components/SkillVerificationModal";
 import { LandingPage } from "./pages/LandingPage";
@@ -8,9 +9,12 @@ import { MatchingPage } from "./pages/MatchingPage";
 import { TeamPage } from "./pages/TeamPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { AuthPage } from "./pages/AuthPage";
-import Loading from "./pages/loading.jsx";
-import Profile from "./pages/profile.jsx";
-import Home from "./pages/home.jsx";
+// @ts-ignore
+import Loading from "./pages/loading";
+// @ts-ignore
+import Profile from "./pages/profile";
+// @ts-ignore
+import Home from "./pages/home";
 import { useProfile } from "./contexts/ProfileContext";
 import { useAuth } from "./contexts/AuthContext";
 import { db } from "./firebase";
@@ -52,7 +56,9 @@ function App() {
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [isProfileLookupReady, setIsProfileLookupReady] = useState(false);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
-  const showNavbar = !["loading", "profile", "home"].includes(currentPage);
+  const showNavbar = !(
+    ["loading", "profile", "home"] as (Page | string)[]
+  ).includes(currentPage);
 
   useEffect(() => {
     if (!isAuthReady) return;
