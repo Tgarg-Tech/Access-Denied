@@ -26,9 +26,11 @@ export interface PastHackathon {
   teamSize: number;
   skillsUsed: string[];
   projectTitle: string;
+  contributionSummary?: string;
   projectLink?: string;
   githubLink?: string;
   demoLink?: string;
+  certificateUrl?: string;
   certificateVerified: boolean;
   result: 'Winner' | 'Finalist' | 'Participant';
   review?: HackathonReview;
