@@ -39,7 +39,7 @@ function App() {
       )}
       {currentPage === "profile" && (
         <Profile
-          onComplete={() => handleNavigate("home")}
+          onComplete={() => handleNavigate("my-profile")}
           onBack={() => handleNavigate("landing")}
         />
       )}

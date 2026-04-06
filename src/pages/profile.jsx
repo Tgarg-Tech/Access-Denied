@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
+import { useProfile } from "../contexts/ProfileContext";
 
 export default function Profile({ onComplete, onBack }) {
+  const { updateProfile } = useProfile();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: "",
@@ -360,6 +362,16 @@ export default function Profile({ onComplete, onBack }) {
               <button
                 className="pr-btn"
                 onClick={() => {
+                  updateProfile({
+                    fullName: form.name,
+                    email: form.email,
+                    college: form.college,
+                    collegeYear: form.year,
+                    preferredRole: form.role,
+                    technicalSkills: form.skills,
+                    projectTypes: form.interests,
+                    availability: form.availability,
+                  });
                   if (onComplete) {
                     onComplete(form);
                     return;

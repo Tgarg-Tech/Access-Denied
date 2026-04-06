@@ -2,26 +2,14 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Brain, Mail, Camera, Save, X, GraduationCap, Briefcase, Rocket } from 'lucide-react';
 
+import { useProfile } from '../contexts/ProfileContext';
+
 interface ProfilePageProps {
 }
 
 export function ProfilePage({}: ProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false);
-
-  const [profileData, setProfileData] = useState({
-    username: 'devgenius',
-    fullName: 'Alex Johnson',
-    email: 'contact@devgenius.com',
-    college: 'Stanford University',
-    collegeYear: '3rd Year',
-    preferredRole: 'Frontend Developer',
-    availability: 'Part Time',
-    interest: 'Building scalable applications and exploring AI/ML.',
-    technicalSkills: ['Core programming', 'Databases', 'Ui/Ux', 'Backend', 'Ai ML', 'Iot', 'Dsa'],
-    softSkills: ['Leadership', 'Presentation', 'Teamwork', 'Time management', 'Problem solving', 'Adaptability', 'Decision making', 'Creativity', 'Innovation'],
-    projectTypes: ['AI/ML', 'Software Development', 'Open Source'],
-    avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400'
-  });
+  const { profile: profileData, updateProfile: setProfileData } = useProfile();
 
   const [editForm, setEditForm] = useState({
     fullName: profileData.fullName,
