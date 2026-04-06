@@ -70,7 +70,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020]">
+    <div className="min-h-screen bg-palette-background dark:bg-[#0B1020]">
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -83,23 +83,23 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6"
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-palette-accent-primary/10 border border-palette-accent-primary/20 mb-6"
             >
-              <Sparkles className="w-4 h-4 text-violet-500" />
-              <span className="text-sm font-medium text-violet-600 dark:text-violet-400">
+              <Sparkles className="w-4 h-4 text-palette-accent-primary" />
+              <span className="text-sm font-medium text-palette-accent-primary dark:text-[#F8FAFC]">
                 Find Your Perfect Team
               </span>
             </motion.div>
 
-            <h1 className="text-6xl md:text-7xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-6 leading-tight">
+            <h1 className="text-6xl md:text-7xl font-bold text-palette-text-primary dark:text-palette-background mb-6 leading-tight">
               Win Hackathons with
               <br />
-              <span className="bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary bg-clip-text text-transparent">
                 The Right Team
               </span>
             </h1>
 
-            <p className="text-xl text-[#64748B] dark:text-[#94A3B8] mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-palette-text-secondary dark:text-palette-text-secondary/80 mb-10 max-w-2xl mx-auto leading-relaxed">
               HackMate uses intelligent matching to connect you with skilled
               teammates who share your goals. Build winning teams faster than
               ever.
@@ -109,7 +109,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate("loading")}
-              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-violet-500/50 transition-all"
+              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-palette-accent-primary/50 transition-all"
             >
               <span>Get Started</span>
               <ArrowRight className="w-5 h-5" />
@@ -171,15 +171,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="relative p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 hover:border-violet-500/50 transition-colors"
+                  className="relative p-8 rounded-2xl bg-palette-card dark:bg-[#121A2B] border border-palette-border dark:border-white/10 hover:border-palette-accent-primary/50 transition-colors"
                 >
-                  <div className="text-6xl font-bold text-violet-500/10 dark:text-violet-500/20 mb-4">
+                  <div className="text-6xl font-bold text-palette-accent-primary/10 dark:text-palette-accent-primary/20 mb-4">
                     {step.number}
                   </div>
-                  <h3 className="text-xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
+                  <h3 className="text-xl font-semibold text-palette-text-primary dark:text-palette-background mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                  <p className="text-palette-text-secondary dark:text-palette-text-secondary/80 leading-relaxed">
                     {step.description}
                   </p>
                 </motion.div>
@@ -237,7 +237,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-12 rounded-3xl bg-gradient-to-br from-violet-500 to-blue-500"
+            className="text-center p-12 rounded-3xl bg-gradient-to-br from-palette-accent-primary to-palette-accent-secondary"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Find Your Team?
@@ -249,7 +249,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate("loading")}
-              className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-xl hover:shadow-xl transition-all"
+              className="px-8 py-4 bg-white text-palette-accent-primary font-semibold rounded-xl hover:shadow-xl transition-all"
             >
               Start Matching Now
             </motion.button>

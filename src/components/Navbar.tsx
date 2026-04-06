@@ -63,23 +63,23 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
       animate={{ y: 0, opacity: 1 }}
       className={`fixed top-0 left-0 right-0 z-50 relative overflow-visible ${
         theme === "dark"
-          ? "bg-gradient-to-r from-[#0F1B2E] via-[#132A45] to-[#0F1B2E]"
-          : "bg-gradient-to-r from-white via-slate-50 to-white"
+          ? "bg-gradient-to-r from-[#2D1B24] via-[#3D212E] to-[#2D1B24]"
+          : "bg-gradient-to-r from-palette-card via-palette-section to-palette-card"
       }`}
     >
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div
           className={`absolute inset-0 ${
             theme === "dark"
-              ? "bg-gradient-to-b from-violet-900/10 to-transparent"
-              : "bg-gradient-to-b from-violet-100/5 to-transparent"
+              ? "bg-gradient-to-b from-palette-accent-primary/10 to-transparent"
+              : "bg-gradient-to-b from-palette-accent-primary/5 to-transparent"
           }`}
         />
         <div
           className={`absolute bottom-0 left-0 right-0 h-[1px] ${
             theme === "dark"
-              ? "bg-gradient-to-r from-violet-500/30 via-violet-500/10 to-transparent"
-              : "bg-gradient-to-r from-violet-400/20 via-violet-400/5 to-transparent"
+              ? "bg-gradient-to-r from-palette-accent-primary/30 via-palette-accent-primary/10 to-transparent"
+              : "bg-gradient-to-r from-palette-border via-palette-border/50 to-transparent"
           }`}
         />
       </div>
@@ -91,17 +91,17 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
               onClick={() => onNavigate("landing")}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-500/20">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-palette-accent-primary to-palette-accent-secondary shadow-lg shadow-palette-accent-primary/20">
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
                 <div
-                  className={`text-lg font-extrabold ${theme === "dark" ? "text-white" : "text-slate-900"}`}
+                   className={`text-lg font-extrabold ${theme === "dark" ? "text-white" : "text-palette-text-primary"}`}
                 >
                   HackMate
                 </div>
                 <div
-                  className={`text-xs ${theme === "dark" ? "text-violet-300" : "text-violet-600"} -mt-0.5`}
+                  className={`text-xs ${theme === "dark" ? "text-palette-accent-secondary" : "text-palette-accent-primary"} -mt-0.5`}
                 >
                   Build. Team. Ship.
                 </div>
@@ -152,10 +152,10 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                   onClick={() => onNavigate(item.page)}
                   className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
                     currentPage === item.page
-                      ? "text-violet-400 bg-violet-500/10"
+                      ? "text-palette-accent-primary bg-palette-accent-primary/10"
                       : theme === "dark"
                         ? "text-gray-300 hover:text-white"
-                        : "text-slate-600 hover:text-slate-900"
+                        : "text-palette-text-secondary hover:text-palette-text-primary"
                   }`}
                 >
                   {item.label}
@@ -245,7 +245,7 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 </button>
                 <button
                   onClick={() => onNavigate("auth-signup")}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-500 to-blue-500 hover:opacity-90 transition-opacity"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary hover:opacity-90 transition-opacity"
                 >
                   Sign Up
                 </button>

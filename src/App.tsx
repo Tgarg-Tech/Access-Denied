@@ -262,14 +262,14 @@ function App() {
 
   if (!isAuthReady || (user && !isProfileLookupReady)) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8]">
+      <div className="min-h-screen bg-palette-background dark:bg-[#0B1020] flex items-center justify-center text-palette-text-secondary dark:text-[#94A3B8]">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020]">
+    <div className="min-h-screen bg-palette-background dark:bg-[#0B1020]">
       {showNavbar && (
         <Navbar onNavigate={handleNavigate} currentPage={currentPage} />
       )}

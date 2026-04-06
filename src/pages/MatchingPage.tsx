@@ -101,7 +101,7 @@ function ProgressRing({ score }: { score: number }) {
           cx="96"
           cy="96"
           r={radius}
-          className="stroke-violet-500"
+          className="stroke-palette-accent-primary"
           strokeWidth="12"
           fill="none"
           strokeLinecap="round"
@@ -116,11 +116,11 @@ function ProgressRing({ score }: { score: number }) {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, type: 'spring' }}
-          className="text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC]"
+          className="text-5xl font-bold text-palette-text-primary dark:text-palette-background"
         >
           {score}%
         </motion.div>
-        <div className="text-sm text-[#64748B] dark:text-[#94A3B8]">Match Score</div>
+        <div className="text-sm text-palette-text-secondary dark:text-palette-text-secondary/80">Match Score</div>
       </div>
     </div>
   );
@@ -146,9 +146,9 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24 pb-20">
+      <div className="min-h-screen bg-palette-background dark:bg-[#0B1020] pt-24 pb-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+          <h2 className="text-3xl font-bold text-palette-text-primary dark:text-palette-background mb-4">
             No more matches available
           </h2>
           <p className="text-[#64748B] dark:text-[#94A3B8] mb-8">
@@ -158,7 +158,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onNavigate('team')}
-            className="px-8 py-4 bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold rounded-xl"
+            className="px-8 py-4 bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary text-white font-semibold rounded-xl"
           >
             Go to Team Page
           </motion.button>
@@ -168,17 +168,17 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24 pb-20">
+    <div className="min-h-screen bg-palette-background dark:bg-[#0B1020] pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+          <h1 className="text-4xl font-bold text-palette-text-primary dark:text-palette-background mb-4">
             Find Your Perfect Teammates
           </h1>
-          <p className="text-lg text-[#64748B] dark:text-[#94A3B8] mb-8">
+          <p className="text-lg text-palette-text-secondary dark:text-palette-text-secondary/80 mb-8">
             Review recommended matches and build your winning team
           </p>
 
@@ -192,7 +192,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                 key={index}
                 className={`h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? 'w-8 bg-violet-500'
+                    ? 'w-8 bg-palette-accent-primary'
                     : index < currentIndex
                     ? 'w-2 bg-green-500'
                     : 'w-2 bg-[#E2E8F0] dark:bg-[#1E293B]'
@@ -207,7 +207,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
-          className="rounded-3xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 overflow-hidden shadow-xl mb-8"
+          className="rounded-3xl bg-palette-card dark:bg-[#121A2B] border border-palette-border dark:border-white/10 overflow-hidden shadow-xl mb-8"
         >
           <div className="p-8">
             <div className="flex items-start gap-6 mb-8">
@@ -218,47 +218,47 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
               />
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                  <h2 className="text-2xl font-bold text-palette-text-primary dark:text-palette-background">
                     {currentUser.name}
                   </h2>
                   {currentUser.verified && (
-                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
-                      <Shield className="w-4 h-4 text-blue-500" />
-                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-palette-accent-secondary/10 border border-palette-accent-secondary/20">
+                      <Shield className="w-4 h-4 text-palette-accent-secondary" />
+                      <span className="text-xs font-semibold text-palette-accent-secondary dark:text-palette-accent-secondary/80">
                         Verified
                       </span>
                     </div>
                   )}
                 </div>
-                <p className="text-lg text-violet-500 font-medium mb-3">{currentUser.role}</p>
+                <p className="text-lg text-palette-accent-primary font-medium mb-3">{currentUser.role}</p>
                 
                 {/* Performance Stats Bar */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Match Score</p>
-                    <p className="text-violet-500 font-extrabold text-lg">{currentUser.matchScore}%</p>
+                  <div className="bg-palette-section dark:bg-[#0B1020] p-3 rounded-xl border border-palette-border dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">Match Score</p>
+                    <p className="text-palette-accent-primary font-extrabold text-lg">{currentUser.matchScore}%</p>
                   </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Authenticity</p>
-                    <div className="flex items-center gap-1.5 text-blue-500 font-bold">
+                  <div className="bg-palette-section dark:bg-[#0B1020] p-3 rounded-xl border border-palette-border dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">Authenticity</p>
+                    <div className="flex items-center gap-1.5 text-palette-accent-secondary font-bold">
                       <Shield className="w-4 h-4" />
                       <span>{currentUser.verified ? 'Verified' : 'Pending'}</span>
                     </div>
                   </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Past Performance</p>
+                  <div className="bg-palette-section dark:bg-[#0B1020] p-3 rounded-xl border border-palette-border dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">Past Performance</p>
                     <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
                       <Star className="w-4 h-4 fill-current" />
                       <span>{currentUser.pastRating}/5</span>
                     </div>
                   </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Completed Hackathons</p>
-                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold text-lg">{currentUser.hackathonsCount}</p>
+                  <div className="bg-palette-section dark:bg-[#0B1020] p-3 rounded-xl border border-palette-border dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">Completed Hackathons</p>
+                    <p className="text-palette-text-primary dark:text-palette-background font-bold text-lg">{currentUser.hackathonsCount}</p>
                   </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5 lg:col-span-2">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Last Role</p>
-                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold">{currentUser.lastRole}</p>
+                  <div className="bg-palette-section dark:bg-[#0B1020] p-3 rounded-xl border border-palette-border dark:border-white/5 lg:col-span-2">
+                    <p className="text-[10px] uppercase font-bold text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">Last Role</p>
+                    <p className="text-palette-text-primary dark:text-palette-background font-bold">{currentUser.lastRole}</p>
                   </div>
                 </div>
 
@@ -322,7 +322,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                 {currentUser.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="px-3 py-1.5 rounded-lg bg-violet-500/10 text-sm font-medium text-violet-600 dark:text-violet-400"
+                    className="px-3 py-1.5 rounded-lg bg-palette-accent-primary/10 text-sm font-medium text-palette-accent-primary dark:text-palette-accent-secondary"
                   >
                     {skill}
                   </span>
@@ -363,7 +363,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleInvite}
-            className="flex-1 flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold hover:shadow-lg hover:shadow-violet-500/50 transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary text-white font-semibold hover:shadow-lg hover:shadow-palette-accent-primary/50 transition-all"
           >
             <Check className="w-5 h-5" />
             Send Invite
@@ -373,7 +373,7 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
         <div className="mt-8 text-center">
           <button
             onClick={() => onNavigate('team')}
-            className="text-violet-500 hover:text-violet-600 font-medium transition-colors"
+            className="text-palette-accent-primary hover:text-palette-accent-primary/80 font-medium transition-colors"
           >
             View My Team ({invitedUsers.length} invites sent)
           </button>

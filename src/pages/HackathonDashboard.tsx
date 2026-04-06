@@ -110,22 +110,22 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24">
+    <div className="min-h-screen bg-palette-background dark:bg-[#0B1020] pt-24">
       <div
         id="hackathon-search-bar"
-        className="relative z-40 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10 py-6"
+        className="relative z-40 bg-palette-background/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-palette-border dark:border-white/10 py-6"
       >
         {" "}
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-palette-text-secondary dark:text-[#94A3B8]" />
               <input
                 type="text"
                 placeholder="Search hackathons..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] dark:placeholder-[#94A3B8] focus:outline-none focus:border-violet-500 transition-colors"
+                className="w-full pl-12 pr-4 py-3 rounded-xl bg-palette-card dark:bg-[#121A2B] border border-palette-border dark:border-white/10 text-palette-text-primary dark:text-[#F8FAFC] placeholder-palette-text-secondary dark:placeholder-[#94A3B8] focus:outline-none focus:border-palette-accent-primary transition-colors"
               />
             </div>
 
@@ -138,8 +138,8 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
                     onClick={() => setStatusFilter(status)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       statusFilter === status
-                        ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white"
-                        : "bg-white dark:bg-[#121A2B] text-[#64748B] dark:text-[#94A3B8] border border-black/10 dark:border-white/10 hover:border-violet-500"
+                        ? "bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary text-white"
+                        : "bg-palette-card dark:bg-[#121A2B] text-palette-text-secondary dark:text-[#94A3B8] border border-palette-border dark:border-white/10 hover:border-palette-accent-primary"
                     }`}
                   >
                     {status}
@@ -157,10 +157,10 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
+          <h1 className="text-4xl font-bold text-palette-text-primary dark:text-palette-background mb-2">
             Discover Hackathons
           </h1>
-          <p className="text-lg text-[#64748B] dark:text-[#94A3B8]">
+          <p className="text-lg text-palette-text-secondary dark:text-palette-text-secondary/80">
             Find the perfect challenge and build your winning team
           </p>
         </motion.div>
@@ -172,7 +172,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="group rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-xl hover:shadow-violet-500/10 transition-all"
+              className="group rounded-2xl bg-palette-card dark:bg-[#121A2B] border border-palette-border dark:border-white/10 overflow-hidden hover:shadow-xl hover:shadow-palette-accent-primary/10 transition-all"
             >
               <div className="relative h-48 overflow-hidden">
                 <img
@@ -194,14 +194,14 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-4 group-hover:text-violet-500 transition-colors">
+                <h3 className="text-xl font-semibold text-palette-text-primary dark:text-palette-background mb-4 group-hover:text-palette-accent-primary transition-colors">
                   {hackathon.title}
                 </h3>
 
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center text-sm text-[#64748B] dark:text-[#94A3B8]">
+                  <div className="flex items-center text-sm text-palette-text-secondary dark:text-palette-text-secondary/80">
                     <DollarSign className="w-4 h-4 mr-2" />
-                    <span className="font-semibold text-violet-500">
+                    <span className="font-semibold text-palette-accent-primary">
                       {hackathon.prize}
                     </span>
                     <span className="ml-1">Prize Pool</span>
@@ -219,7 +219,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
                 <motion.button
                   whileHover={{ x: 5 }}
                   onClick={() => onNavigate("details", hackathon.id)}
-                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 font-medium hover:bg-violet-500/20 transition-colors"
+                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-palette-accent-primary/10 text-palette-accent-primary dark:text-palette-accent-secondary font-medium hover:bg-palette-accent-primary/20 transition-colors"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-5 h-5" />

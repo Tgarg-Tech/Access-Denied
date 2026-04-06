@@ -125,17 +125,17 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24 pb-20">
+    <div className="min-h-screen bg-palette-background dark:bg-[#0B1020] pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
+          <h1 className="text-4xl font-bold text-palette-text-primary dark:text-palette-background mb-4">
             User Profile
           </h1>
-          <p className="text-lg text-[#64748B] dark:text-[#94A3B8]">
+          <p className="text-lg text-palette-text-secondary dark:text-palette-text-secondary/80">
             Manage your personal information and skills
           </p>
         </motion.div>
@@ -143,16 +143,16 @@ export function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-3xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 overflow-hidden shadow-xl"
+          className="rounded-3xl bg-palette-card dark:bg-[#121A2B] border border-palette-border dark:border-white/10 overflow-hidden shadow-xl"
         >
           {/* Header Background */}
-          <div className="h-32 bg-gradient-to-r from-violet-500 to-blue-500 relative">
+          <div className="h-32 bg-gradient-to-r from-palette-accent-primary to-palette-accent-secondary relative">
             <div className="absolute -bottom-16 left-8 flex items-end">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full border-4 border-white dark:border-[#121A2B] bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white text-5xl font-extrabold">
+                <div className="w-32 h-32 rounded-full border-4 border-palette-card dark:border-[#121A2B] bg-gradient-to-br from-palette-accent-primary to-palette-accent-secondary flex items-center justify-center text-white text-5xl font-extrabold">
                   {profileInitial}
                 </div>
-                <button className="absolute bottom-0 right-0 p-2 rounded-full bg-violet-500 text-white hover:bg-violet-600 transition-colors shadow-lg">
+                <button className="absolute bottom-0 right-0 p-2 rounded-full bg-palette-accent-primary text-white hover:bg-palette-accent-primary/80 transition-colors shadow-lg">
                   <Camera className="w-4 h-4" />
                 </button>
               </div>
@@ -190,14 +190,14 @@ export function ProfilePage() {
                   <>
                     <button
                       onClick={handleCancel}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 text-[#64748B] dark:text-[#94A3B8] font-medium hover:border-red-500 hover:text-red-500 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-palette-background dark:bg-[#0B1020] border border-palette-border dark:border-white/10 text-palette-text-secondary dark:text-palette-text-secondary/80 font-medium hover:border-red-500 hover:text-red-500 transition-colors"
                     >
                       <X className="w-4 h-4" /> Cancel
                     </button>
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 text-white font-medium hover:bg-violet-600 transition-colors shadow-lg shadow-violet-500/25"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-palette-accent-primary text-white font-medium hover:bg-palette-accent-primary/80 transition-colors shadow-lg shadow-palette-accent-primary/25"
                     >
                       <Save className="w-4 h-4" />{" "}
                       {isSaving ? "Saving..." : "Save"}
@@ -206,7 +206,7 @@ export function ProfilePage() {
                 ) : (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-6 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] font-medium hover:border-violet-500 transition-colors"
+                    className="px-6 py-2 rounded-xl bg-palette-background dark:bg-[#0B1020] border border-palette-border dark:border-white/10 text-palette-text-primary dark:text-palette-background font-medium hover:border-palette-accent-primary transition-colors"
                   >
                     Edit Profile
                   </button>
@@ -229,11 +229,11 @@ export function ProfilePage() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, college: e.target.value })
                         }
-                        className="w-full px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors"
+                        className="w-full px-4 py-2 rounded-xl bg-palette-background dark:bg-[#0B1020] border border-palette-border dark:border-white/10 text-palette-text-primary dark:text-palette-background focus:outline-none focus:border-pink-500 transition-colors"
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">
+                      <label className="block text-sm font-medium text-palette-text-secondary dark:text-palette-text-secondary/80 mb-1">
                         Year
                       </label>
                       <input
@@ -245,13 +245,13 @@ export function ProfilePage() {
                             collegeYear: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors"
+                        className="w-full px-4 py-2 rounded-xl bg-palette-background dark:bg-[#0B1020] border border-palette-border dark:border-white/10 text-palette-text-primary dark:text-palette-background focus:outline-none focus:border-pink-500 transition-colors"
                       />
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 text-[#64748B] dark:text-[#94A3B8]">
-                    <GraduationCap className="w-5 h-5 text-violet-500" />
+                  <div className="flex items-center gap-3 text-palette-text-secondary dark:text-palette-text-secondary/80">
+                    <GraduationCap className="w-5 h-5 text-pink-500" />
                     <span>
                       {profileData.college} • {profileData.collegeYear}
                     </span>
