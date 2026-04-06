@@ -3,7 +3,7 @@ import { Users, Shield, Clock, AlertCircle, Plus, Mail, CheckCircle, XCircle } f
 import { useState } from 'react';
 
 interface TeamPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, id?: string) => void;
   onOpenSkillModal: () => void;
 }
 
@@ -206,11 +206,15 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
                     <img
                       src={member.avatar}
                       alt={member.name}
-                      className="w-16 h-16 rounded-xl object-cover"
+                      className="w-16 h-16 rounded-xl object-cover cursor-pointer hover:ring-2 hover:ring-violet-500 transition-all"
+                      onClick={() => member.id !== '1' && onNavigate('userProfileView', member.id)}
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                        <h3 
+                          className={`font-semibold ${member.id !== '1' ? 'cursor-pointer hover:text-violet-500' : ''} text-[#0F172A] dark:text-[#F8FAFC] transition-colors`}
+                          onClick={() => member.id !== '1' && onNavigate('userProfileView', member.id)}
+                        >
                           {member.name}
                         </h3>
                         {member.verified && (
@@ -289,11 +293,15 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
                       <img
                         src={invite.avatar}
                         alt={invite.name}
-                        className="w-16 h-16 rounded-xl object-cover"
+                        className="w-16 h-16 rounded-xl object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                        onClick={() => onNavigate('userProfileView', invite.id)}
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                          <h3 
+                            className="font-semibold cursor-pointer hover:text-blue-500 text-[#0F172A] dark:text-[#F8FAFC] transition-colors"
+                            onClick={() => onNavigate('userProfileView', invite.id)}
+                          >
                             {invite.name}
                           </h3>
                           {invite.verified && (
