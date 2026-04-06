@@ -1,5 +1,14 @@
-import { motion } from 'framer-motion';
-import { Users, Zap, Shield, Target, ArrowRight, Sparkles, Trophy, Search } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  Users,
+  Zap,
+  Shield,
+  Target,
+  ArrowRight,
+  Sparkles,
+  Trophy,
+  Search,
+} from "lucide-react";
 
 interface LandingPageProps {
   onNavigate: (page: string) => void;
@@ -9,46 +18,54 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   const features = [
     {
       icon: Search,
-      title: 'Smart Matching',
-      description: 'AI-powered algorithm matches you with teammates based on skills, interests, and compatibility.',
+      title: "Smart Matching",
+      description:
+        "AI-powered algorithm matches you with teammates based on skills, interests, and compatibility.",
     },
     {
       icon: Shield,
-      title: 'Verified Skills',
-      description: 'Trust your team with skill verification through GitHub, portfolios, and certificates.',
+      title: "Verified Skills",
+      description:
+        "Trust your team with skill verification through GitHub, portfolios, and certificates.",
     },
     {
       icon: Target,
-      title: 'Role-Based Search',
-      description: 'Find the perfect complement to your team with targeted role-based recommendations.',
+      title: "Role-Based Search",
+      description:
+        "Find the perfect complement to your team with targeted role-based recommendations.",
     },
     {
       icon: Trophy,
-      title: 'Track Success',
-      description: 'Monitor team readiness scores and ensure you have all the skills needed to win.',
+      title: "Track Success",
+      description:
+        "Monitor team readiness scores and ensure you have all the skills needed to win.",
     },
   ];
 
   const steps = [
     {
-      number: '01',
-      title: 'Browse Hackathons',
-      description: 'Explore upcoming hackathons and find the perfect challenge for you.',
+      number: "01",
+      title: "Browse Hackathons",
+      description:
+        "Explore upcoming hackathons and find the perfect challenge for you.",
     },
     {
-      number: '02',
-      title: 'Build Your Profile',
-      description: 'Showcase your skills, verify your expertise, and highlight your interests.',
+      number: "02",
+      title: "Build Your Profile",
+      description:
+        "Showcase your skills, verify your expertise, and highlight your interests.",
     },
     {
-      number: '03',
-      title: 'Get Matched',
-      description: 'Our algorithm connects you with compatible teammates who complement your skills.',
+      number: "03",
+      title: "Get Matched",
+      description:
+        "Our algorithm connects you with compatible teammates who complement your skills.",
     },
     {
-      number: '04',
-      title: 'Form Your Team',
-      description: 'Invite members, coordinate roles, and prepare to win together.',
+      number: "04",
+      title: "Form Your Team",
+      description:
+        "Invite members, coordinate roles, and prepare to win together.",
     },
   ];
 
@@ -65,7 +82,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6"
             >
               <Sparkles className="w-4 h-4 text-violet-500" />
@@ -83,13 +100,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </h1>
 
             <p className="text-xl text-[#64748B] dark:text-[#94A3B8] mb-10 max-w-2xl mx-auto leading-relaxed">
-              DevMatch uses intelligent matching to connect you with skilled teammates who share your goals. Build winning teams faster than ever.
+              DevSath uses intelligent matching to connect you with skilled
+              teammates who share your goals. Build winning teams faster than
+              ever.
             </p>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onNavigate("dashboard")}
               className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-violet-500/50 transition-all"
             >
               <span>Get Started</span>
@@ -104,16 +123,24 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             className="grid md:grid-cols-3 gap-6 mb-32"
           >
             <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
-              <div className="text-4xl font-bold text-violet-500 mb-2">10K+</div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">Active Developers</div>
+              <div className="text-4xl font-bold text-violet-500 mb-2">
+                10K+
+              </div>
+              <div className="text-[#64748B] dark:text-[#94A3B8]">
+                Active Developers
+              </div>
             </div>
             <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
               <div className="text-4xl font-bold text-blue-500 mb-2">500+</div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">Hackathons Listed</div>
+              <div className="text-[#64748B] dark:text-[#94A3B8]">
+                Hackathons Listed
+              </div>
             </div>
             <div className="text-center p-8 rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10">
               <div className="text-4xl font-bold text-violet-500 mb-2">95%</div>
-              <div className="text-[#64748B] dark:text-[#94A3B8]">Match Success Rate</div>
+              <div className="text-[#64748B] dark:text-[#94A3B8]">
+                Match Success Rate
+              </div>
             </div>
           </motion.div>
 
@@ -208,12 +235,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               Ready to Find Your Team?
             </h2>
             <p className="text-white/90 text-lg mb-8">
-              Join thousands of developers building winning teams on DevMatch
+              Join thousands of developers building winning teams on DevSath
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onNavigate("dashboard")}
               className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-xl hover:shadow-xl transition-all"
             >
               Start Matching Now
