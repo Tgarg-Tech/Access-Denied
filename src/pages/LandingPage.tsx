@@ -108,7 +108,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate("dashboard")}
+              onClick={() => onNavigate("loading")}
               className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-violet-500 to-blue-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-violet-500/50 transition-all"
             >
               <span>Get Started</span>
@@ -144,7 +144,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </motion.div>
 
-          <div className="mb-32">
+          <div id="how-it-works" className="mb-32">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -183,7 +183,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </div>
 
-          <div className="mb-20">
+          <div id="features" className="mb-20">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -240,7 +240,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate("dashboard")}
+              onClick={() => onNavigate("loading")}
               className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-xl hover:shadow-xl transition-all"
             >
               Start Matching Now

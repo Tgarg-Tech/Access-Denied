@@ -10,6 +10,19 @@ interface NavbarProps {
 export function Navbar({ onNavigate, currentPage }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
 
+  const scrollToId = (id: string) => {
+    try {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        onNavigate("landing");
+      }
+    } catch (e) {
+      onNavigate("landing");
+    }
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -39,10 +52,16 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 >
                   Hackathons
                 </button>
-                <button className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors">
+                <button
+                  onClick={() => scrollToId("how-it-works")}
+                  className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
+                >
                   How It Works
                 </button>
-                <button className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors">
+                <button
+                  onClick={() => scrollToId("features")}
+                  className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
+                >
                   Features
                 </button>
               </>
