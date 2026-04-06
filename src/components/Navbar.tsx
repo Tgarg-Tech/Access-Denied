@@ -96,7 +96,7 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 <div
                   className={`text-lg font-extrabold ${theme === "dark" ? "text-white" : "text-slate-900"}`}
                 >
-                  DevSath
+                  HackMate
                 </div>
                 <div
                   className={`text-xs ${theme === "dark" ? "text-violet-300" : "text-violet-600"} -mt-0.5`}

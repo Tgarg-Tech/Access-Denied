@@ -235,7 +235,7 @@ export default function Profile({ onComplete, onBack }) {
               <div className="pr-brand-icon">
                 <Users className="w-4 h-4 text-white" />
               </div>
-              <span className="pr-brand-name">DevSath</span>
+              <span className="pr-brand-name">HackMate</span>
             </div>
           </div>
         </div>

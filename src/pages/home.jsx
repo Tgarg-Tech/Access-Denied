@@ -343,7 +343,7 @@ export default function Home({ onNavigate }) {
             <div className="hm-logo-icon">
               <Users className="w-4 h-4 text-white" />
             </div>
-            DevSath
+            HackMate
           </div>
           <div className="hm-nav-right">
             {onNavigate && (

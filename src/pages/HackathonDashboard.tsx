@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Search, Filter, Calendar, Users, DollarSign, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface HackathonDashboardProps {
   onNavigate: (page: string, hackathonId?: string) => void;
@@ -73,6 +73,18 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
+  useEffect(() => {
+    const setNavHeight = () => {
+      const nav = document.querySelector('nav');
+      const navHeight = nav ? nav.getBoundingClientRect().height : 64;
+      document.documentElement.style.setProperty('--nav-height', `${navHeight}px`);
+    };
+
+    setNavHeight();
+    window.addEventListener('resize', setNavHeight);
+    return () => window.removeEventListener('resize', setNavHeight);
+  }, []);
+
   const filteredHackathons = hackathons.filter(h => {
     const matchesSearch = h.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All' || h.status === statusFilter;
@@ -81,8 +93,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24">
-      <div className="sticky top-20 z-40 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10 py-6">
-        <div className="max-w-7xl mx-auto px-6">
+<div id="hackathon-search-bar" className="relative z-40 bg-[#F8FAFC]/70 dark:bg-[#0B1020]/70 backdrop-blur-md border-b border-black/10 dark:border-white/10 py-6">        <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />

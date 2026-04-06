@@ -23,7 +23,7 @@ export function AuthPage({ mode, onModeChange, onSuccess }: AuthPageProps) {
 
   const helperText = useMemo(() => {
     if (isSignup) {
-      return "Create your DevSath account and continue to profile setup.";
+      return "Create your HackMate account and continue to profile setup.";
     }
     return "Welcome back. Log in to continue building your team.";
   }, [isSignup]);
@@ -146,7 +146,7 @@ export function AuthPage({ mode, onModeChange, onSuccess }: AuthPageProps) {
           </h2>
           <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mb-6">
             {isSignup
-              ? "Use Google to create your DevSath account."
+              ? "Use Google to create your HackMate account."
               : "Continue with your Google account."}
           </p>
 

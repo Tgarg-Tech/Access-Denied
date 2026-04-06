@@ -2,7 +2,7 @@
 
 ## 🚀 Project Title
 
-DevSath
+HackMate
 
 ## 🧠 Problem Statement
 

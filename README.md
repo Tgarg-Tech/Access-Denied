@@ -1,11 +1,11 @@
-# 🚀 DevSath
+# 🚀 HackMate
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-**DevSath**  is a focused web platform designed to help hackathon participants find, evaluate, and form high-performing teams quickly. By pairing participants based on technical skills, soft skills, interests, and missing roles, DevSath eliminates the friction of team formation and produces balanced, competitive groups.
+**HackMate** is a focused web platform designed to help hackathon participants find, evaluate, and form high-performing teams quickly. By pairing participants based on technical skills, soft skills, interests, and missing roles, HackMate eliminates the friction of team formation and produces balanced, competitive groups.
 
 ---
 
@@ -17,7 +17,7 @@ Hackathon participants often spend excessive time finding teammates or end up in
 
 ### The Solution
 
-DevSath reduces team-formation friction by:
+HackMate reduces team-formation friction by:
 
 - Allowing participants to build skill-rich profiles backed by **Verification Artifacts**.
 - Discovering hackathons and matching candidates using a **transparent scoring model**.
@@ -35,7 +35,7 @@ DevSath reduces team-formation friction by:
 
 ## 🧠 The Matching Algorithm
 
-DevSath uses an explainable, weighted heuristic to compute a **Compatibility Score** from multiple signals. This ensures the matching logic is transparent and easy to justify.
+HackMate uses an explainable, weighted heuristic to compute a **Compatibility Score** from multiple signals. This ensures the matching logic is transparent and easy to justify.
 
 > **S = (w₁ _ Complementarity) + (w₂ _ VerifiedSkillMatch) + (w₃ _ InterestOverlap) + (w₄ _ RoleUrgency) + (w₅ \* SoftSkillFit)**
 
