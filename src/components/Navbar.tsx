@@ -56,7 +56,7 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
     <motion.nav
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 relative overflow-visible"
+      className="fixed top-0 left-0 right-0 z-50 overflow-visible backdrop-blur-md bg-[#F8FAFC]/80 dark:bg-[#0B1020]/80"
     >
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute inset-0 landing-mesh opacity-70" />
@@ -123,6 +123,17 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
                 }`}
               >
                 Features
+              </button>
+
+              <button
+                onClick={() => scrollToId("about")}
+                className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
+                  theme === "dark"
+                    ? "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
+                }`}
+              >
+                About
               </button>
             </div>
           ) : (
