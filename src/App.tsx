@@ -158,26 +158,6 @@ function App() {
   }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
 
   useEffect(() => {
-    if (!user || !isProfileLookupReady || !hasCompletedProfile) return;
-
-    const onboardingPages: Page[] = [
-      "profile",
-      "loading",
-      "auth-signup",
-      "auth-login",
-    ];
-
-    if (onboardingPages.includes(currentPage)) {
-      setCurrentPage("dashboard");
-      try {
-        window.history.replaceState({ page: "dashboard" }, "", "#dashboard");
-      } catch {
-        // Ignore history API failures in restricted environments.
-      }
-    }
-  }, [currentPage, hasCompletedProfile, isProfileLookupReady, user]);
-
-  useEffect(() => {
     if (!user || !isProfileLookupReady || hasCompletedProfile) return;
 
     const onboardingPages: Page[] = [
@@ -377,4 +357,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

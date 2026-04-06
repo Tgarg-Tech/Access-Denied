@@ -93,7 +93,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="absolute right-[20%] top-[30%] h-44 w-44 rounded-full border border-white/30 dark:border-white/10" />
       </div>
 
-      <div className="pt-8 pb-20 px-6">
+      <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -126,8 +126,8 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
               <p className="text-lg md:text-xl text-[#4e5a7d] dark:text-[#b0b9dc] mb-8 max-w-2xl leading-relaxed">
                 HackMate matches you with skilled builders that complement your
-                stack, your pace, and your hackathon goal. Stop searching.
-                Start shipping.
+                stack, your pace, and your hackathon goal. Stop searching. Start
+                shipping.
               </p>
 
               <div className="flex flex-wrap gap-3 mb-8">
@@ -169,7 +169,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               <div className="relative rounded-[28px] glass-panel p-6 md:p-8 border-white/70 dark:border-white/15">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <p className="text-sm text-[#56648f] dark:text-[#b8c2e4]">Live Team Readiness</p>
+                    <p className="text-sm text-[#56648f] dark:text-[#b8c2e4]">
+                      Live Team Readiness
+                    </p>
                     <p className="font-display text-3xl text-[#1f2b53] dark:text-white font-bold">
                       92%
                     </p>
@@ -181,22 +183,36 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
                 <div className="space-y-3 mb-6">
                   <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
-                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Frontend Engineer</span>
-                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-emerald-600 dark:text-emerald-300">Matched</span>
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">
+                      Frontend Engineer
+                    </span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-emerald-600 dark:text-emerald-300">
+                      Matched
+                    </span>
                   </div>
                   <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
-                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">ML Specialist</span>
-                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-cyan-600 dark:text-cyan-300">Suggested</span>
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">
+                      ML Specialist
+                    </span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-cyan-600 dark:text-cyan-300">
+                      Suggested
+                    </span>
                   </div>
                   <div className="rounded-xl glass-panel-soft p-3 flex items-center justify-between">
-                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">Pitch Lead</span>
-                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-violet-600 dark:text-violet-300">Open</span>
+                    <span className="text-sm text-[#495781] dark:text-[#c1caeb]">
+                      Pitch Lead
+                    </span>
+                    <span className="text-xs px-2 py-1 rounded-full glass-panel-soft text-violet-600 dark:text-violet-300">
+                      Open
+                    </span>
                   </div>
                 </div>
 
                 <div className="rounded-2xl p-4 glass-panel-soft text-[#2f3f73] dark:text-[#d0d9fb]">
                   <p className="text-sm opacity-80">Recommended next action</p>
-                  <p className="font-semibold">Invite 2 top candidates to Team Orbit</p>
+                  <p className="font-semibold">
+                    Invite 2 top candidates to Team Orbit
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -217,13 +233,17 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               </div>
             </div>
             <div className="text-center p-8 rounded-2xl glass-panel shadow-lg shadow-[#35d9ff]/10 gradient-border-card">
-              <div className="font-display text-4xl font-bold text-[#3bbef8] mb-2">500+</div>
+              <div className="font-display text-4xl font-bold text-[#3bbef8] mb-2">
+                500+
+              </div>
               <div className="text-[#5f6f97] dark:text-[#a8b4d8]">
                 Hackathons Listed
               </div>
             </div>
             <div className="text-center p-8 rounded-2xl glass-panel shadow-lg shadow-[#ff8f6f]/10 gradient-border-card">
-              <div className="font-display text-4xl font-bold text-[#ff8158] mb-2">95%</div>
+              <div className="font-display text-4xl font-bold text-[#ff8158] mb-2">
+                95%
+              </div>
               <div className="text-[#5f6f97] dark:text-[#a8b4d8]">
                 Match Success Rate
               </div>
@@ -244,7 +264,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-5">
                 <span className="h-2 w-2 rounded-full bg-[#5f73ff]" />
-                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">Simple process, strong teams</span>
+                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">
+                  Simple process, strong teams
+                </span>
               </div>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 How It Works
@@ -297,7 +319,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-5">
                 <Sparkles className="w-4 h-4 text-[#5a67e8]" />
-                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">Built for fast-moving teams</span>
+                <span className="text-sm font-medium text-[#4b58aa] dark:text-[#b9c3ff]">
+                  Built for fast-moving teams
+                </span>
               </div>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-4">
                 Powerful Features
@@ -356,7 +380,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                 </span>
               </div>
               <p className="text-[#5f6f97] dark:text-[#a8b4d8] leading-relaxed">
-                The platform combines profile quality, role balance, and collaboration signals so you can spend less time searching and more time building.
+                The platform combines profile quality, role balance, and
+                collaboration signals so you can spend less time searching and
+                more time building.
               </p>
             </div>
 
@@ -365,31 +391,40 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                 <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#ff8a64]/70 border border-white/40 flex items-center justify-center mb-4">
                   <Users className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Chemistry-first Matching</h3>
-                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Beyond skills, we score communication style and collaboration rhythm.</p>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">
+                  Chemistry-first Matching
+                </h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">
+                  Beyond skills, we score communication style and collaboration
+                  rhythm.
+                </p>
               </div>
               <div className="p-6 rounded-2xl glass-panel gradient-border-card hover:shadow-lg hover:shadow-[#5f75ff]/10 transition-all">
                 <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#5f75ff]/70 border border-white/40 flex items-center justify-center mb-4">
                   <Sparkles className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Instant Team Drafts</h3>
-                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Get ready-to-invite squads with balanced roles in one click.</p>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">
+                  Instant Team Drafts
+                </h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">
+                  Get ready-to-invite squads with balanced roles in one click.
+                </p>
               </div>
               <div className="p-6 rounded-2xl glass-panel gradient-border-card hover:shadow-lg hover:shadow-[#8a67ff]/10 transition-all">
                 <div className="w-11 h-11 rounded-lg glass-panel-soft bg-[#8a67ff]/70 border border-white/40 flex items-center justify-center mb-4">
                   <Rocket className="w-5 h-5 text-[#14224d] dark:text-white" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">Launch-ready Tracking</h3>
-                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">Know team gaps early with role health and readiness signals.</p>
+                <h3 className="font-display text-xl font-bold text-[#111c3e] dark:text-white mb-2">
+                  Launch-ready Tracking
+                </h3>
+                <p className="text-[#5f6f97] dark:text-[#a8b4d8]">
+                  Know team gaps early with role health and readiness signals.
+                </p>
               </div>
             </div>
           </div>
 
-          <div
-            id="about"
-            className="mb-32"
-            style={{ scrollMarginTop: "80px" }}
-          >
+          <div id="about" className="mb-32" style={{ scrollMarginTop: "80px" }}>
             <div className="ambient-line h-px mb-14" />
             <motion.div
               initial={{ opacity: 0 }}
@@ -401,23 +436,43 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
                 About HackMate
               </h2>
               <p className="text-lg text-[#5f6f97] dark:text-[#a8b4d8] max-w-3xl mx-auto leading-relaxed">
-                HackMate was built by a passionate team of developers who experienced the friction of hackathon team formation firsthand. Our platform leverages transparency, compatibility scoring, and verified skill proof to ensure that every participant finds their perfect squad. We believe that great chemistry leads to great products.
+                HackMate was built by a passionate team of developers who
+                experienced the friction of hackathon team formation firsthand.
+                Our platform leverages transparency, compatibility scoring, and
+                verified skill proof to ensure that every participant finds
+                their perfect squad. We believe that great chemistry leads to
+                great products.
               </p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="flex justify-center gap-6"
             >
-              <a href="https://twitter.com/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+              <a
+                href="https://twitter.com/hackmate"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-full glass-panel hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]"
+              >
                 <Twitter className="w-6 h-6" />
               </a>
-              <a href="https://linkedin.com/company/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+              <a
+                href="https://linkedin.com/company/hackmate"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-full glass-panel hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] transition-colors text-[#5f6f97] dark:text-[#a8b4d8]"
+              >
                 <Linkedin className="w-6 h-6" />
               </a>
-              <a href="https://github.com/hackmate" target="_blank" rel="noreferrer" className="p-3 rounded-full glass-panel hover:bg-[#333]/10 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-colors text-[#5f6f97] dark:text-[#a8b4d8]">
+              <a
+                href="https://github.com/hackmate"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-full glass-panel hover:bg-[#333]/10 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-colors text-[#5f6f97] dark:text-[#a8b4d8]"
+              >
                 <Github className="w-6 h-6" />
               </a>
             </motion.div>

@@ -285,18 +285,21 @@ function scoreColor(score: number) {
 
 // ─── Score Ring ───────────────────────────────────────────────────────────────
 function ScoreRing({ score }: { score: number }) {
-  const radius = 52;
+  // Reduced radius to make the score ring smaller so the card fits better on smaller screens
+  const radius = 44;
   const circ = 2 * Math.PI * radius;
   const offset = circ - (score / 100) * circ;
   const col = scoreColor(score);
 
+  const size = 110; // SVG size (diameter + stroke)
+
   return (
-    <div className="relative" style={{ width: 130, height: 130 }}>
-      <svg width="130" height="130" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="65" cy="65" r={radius} fill="none" stroke="#F1F5F9" strokeWidth="10" />
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#F1F5F9" strokeWidth="10" />
         <motion.circle
-          cx="65"
-          cy="65"
+          cx={size / 2}
+          cy={size / 2}
           r={radius}
           fill="none"
           stroke={col.ring}
@@ -305,7 +308,7 @@ function ScoreRing({ score }: { score: number }) {
           strokeDasharray={circ}
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
         />
       </svg>
       <div
@@ -313,10 +316,10 @@ function ScoreRing({ score }: { score: number }) {
         style={{ color: col.text }}
       >
         <motion.span
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, scale: 0.6 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, type: "spring" }}
-          className="text-3xl font-black"
+          transition={{ delay: 0.45, type: "spring" }}
+          className="text-2xl font-black"
         >
           {score}
         </motion.span>
@@ -470,7 +473,7 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
             style={{ boxShadow: "0 2px 24px 0 rgba(0,0,0,0.06)" }}
           >
             {/* Top banner */}
-            <div className="h-24 bg-gradient-to-br from-slate-50 to-indigo-50 relative dark:from-slate-900 dark:to-slate-950">
+            <div className="h-16 bg-gradient-to-br from-slate-50 to-indigo-50 relative dark:from-slate-900 dark:to-slate-950">
               <div
                 className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
                 style={{ background: col.bg, color: col.text }}
@@ -479,20 +482,20 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
               </div>
             </div>
 
-            <div className="px-6 pb-6">
+              <div className="px-5 pb-5">
               {/* Avatar row */}
-              <div className="flex items-end justify-between -mt-10 mb-5">
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-20 h-20 rounded-2xl object-cover ring-4 ring-white shadow-md"
-                />
+                <div className="flex items-end justify-between -mt-8 mb-4">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-sm"
+                  />
                 <ScoreRing score={breakdown.score} />
               </div>
 
               {/* Name + role */}
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{currentUser.name}</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentUser.name}</h2>
                 {currentUser.verified && (
                   <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-blue-50">
                     <Shield className="w-3 h-3 text-blue-500" />
