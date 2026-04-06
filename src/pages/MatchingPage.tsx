@@ -13,14 +13,15 @@ const teammates = [
     role: 'Full Stack Developer',
     avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400',
     verified: true,
-    matchScore: 92,
-    pastRating: 4.8,
-    hackathonsCount: 12,
-    lastRole: 'Lead Frontend',
+    matchScore: 89,
+    pastRating: 4.5,
+    hackathonsCount: 5,
+    lastRole: 'Backend Developer',
     skills: ['React', 'Node.js', 'Python', 'AWS'],
     interests: ['AI/ML', 'Cloud Computing', 'DevOps'],
     matchReasons: ['Skill Match', 'Interest Match'],
-    bio: 'Passionate about building scalable web applications. 5+ years experience.',
+    strengths: ['Teamwork', 'Backend', 'System Design'],
+    bio: 'Passionate about building scalable web applications. Strong in teamwork and backend architecture.',
     github: 'sarahchen',
     linkedin: 'sarah-chen',
   },
@@ -37,6 +38,7 @@ const teammates = [
     skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
     interests: ['Product Design', 'Mobile Apps', 'Accessibility'],
     matchReasons: ['Interest Match'],
+    strengths: ['Visual Design', 'Collaboration'],
     bio: 'Award-winning designer with a focus on user-centered design principles.',
     github: 'marcusr',
     linkedin: 'marcus-rodriguez',
@@ -54,6 +56,7 @@ const teammates = [
     skills: ['Python', 'TensorFlow', 'Data Analysis', 'SQL'],
     interests: ['Machine Learning', 'Data Visualization', 'AI'],
     matchReasons: ['Skill Match'],
+    strengths: ['Data Modeling', 'Python'],
     bio: 'ML enthusiast with experience in predictive modeling and data pipelines.',
     github: 'emilypark',
     linkedin: 'emily-park',
@@ -71,6 +74,7 @@ const teammates = [
     skills: ['Java', 'Spring Boot', 'Docker', 'Kubernetes'],
     interests: ['Microservices', 'Cloud Architecture', 'DevOps'],
     matchReasons: ['Skill Match', 'Interest Match'],
+    strengths: ['Cloud Infra', 'DevOps', 'Distributed Systems'],
     bio: 'Backend specialist focused on building robust, scalable systems.',
     github: 'alexkim',
     linkedin: 'alex-kim',
@@ -229,25 +233,32 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                 <p className="text-lg text-violet-500 font-medium mb-3">{currentUser.role}</p>
                 
                 {/* Performance Stats Bar */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Past Rating</p>
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Match Score</p>
+                    <p className="text-violet-500 font-extrabold text-lg">{currentUser.matchScore}%</p>
+                  </div>
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Authenticity</p>
+                    <div className="flex items-center gap-1.5 text-blue-500 font-bold">
+                      <Shield className="w-4 h-4" />
+                      <span>{currentUser.verified ? 'Verified' : 'Pending'}</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Past Performance</p>
                     <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
                       <Star className="w-4 h-4 fill-current" />
                       <span>{currentUser.pastRating}/5</span>
                     </div>
                   </div>
                   <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Hackathons</p>
-                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold">{currentUser.hackathonsCount}+</p>
+                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Completed Hackathons</p>
+                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold text-lg">{currentUser.hackathonsCount}</p>
                   </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5 lg:col-span-2">
                     <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Last Role</p>
-                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold text-xs truncate">{currentUser.lastRole}</p>
-                  </div>
-                  <div className="bg-[#F8FAFC] dark:bg-[#0B1020] p-3 rounded-xl border border-black/5 dark:border-white/5">
-                    <p className="text-[10px] uppercase font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">Match Score</p>
-                    <p className="text-violet-500 font-bold">{currentUser.matchScore}%</p>
+                    <p className="text-[#0F172A] dark:text-[#F8FAFC] font-bold">{currentUser.lastRole}</p>
                   </div>
                 </div>
 
@@ -266,6 +277,23 @@ export function MatchingPage({ onNavigate }: MatchingPageProps) {
                     <Mail className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8] group-hover:text-violet-500" />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-3">
+                Top Strengths
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {currentUser.strengths?.map((strength: string) => (
+                  <span
+                    key={strength}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-sm font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    {strength}
+                  </span>
+                ))}
               </div>
             </div>
 
