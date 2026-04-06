@@ -1,12 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  Moon,
-  Sun,
-  Users,
-  LogOut,
-  Settings,
-  ChevronDown,
-} from "lucide-react";
+import { Moon, Sun, Users, LogOut, Settings, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
 import { useProfile } from "../contexts/ProfileContext";
@@ -43,6 +36,7 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
   const mainNav = [
     { label: "Hackathons", page: "dashboard" },
     { label: "Matching", page: "matching" },
+    { label: "Explore", page: "explore" },
     { label: "Teams", page: "team" },
   ];
 

@@ -1,96 +1,73 @@
-/**
- * MatchingPage.tsx — Enhanced with smart rating system + white Figma-like UI
- *
- * ─── RATING FORMULA ───────────────────────────────────────────────────────────
- *
- * score = (skillComplement * 12) + (commonInterests * 10) + (reverseComplement * 5)
- *       + (experienceMatch * 8) + (sameCollege * 3) + (extraSkills * 2) + projectBoost
- *
- * Where:
- *  skillComplement  = skills candidate has that YOU don't (complementary value)
- *                     e.g. You: [React, Node] | Them: [Figma, Python, React]
- *                     complement = [Figma, Python] → count = 2 → 2*12 = 24
- *
- *  commonInterests  = shared project interest tags (AI/ML, Web3, etc.)
- *                     e.g. You: [AI/ML, Web3] | Them: [AI/ML, Gaming, Web3]
- *                     common = [AI/ML, Web3] → count = 2 → 2*10 = 20
- *
- *  reverseComplement = your skills they DON'T have (you add value to THEM too)
- *                      e.g. You: [React] | Them: [] → reverseComplement = 1 → 1*5 = 5
- *
- *  experienceMatch  = abs(yourYearIndex - theirYearIndex) mapped to 0–3
- *                     same year = 3, 1 year apart = 2, 2 years = 1, 3+ = 0 → *8
- *                     e.g. both 3rd year → 3*8 = 24
- *
- *  sameCollege      = 1 if same college, 0 otherwise → *3
- *                     e.g. both IIT Delhi → 1*3 = 3
- *
- *  extraSkills      = total unique skills they bring beyond the complement threshold
- *                     (raw breadth bonus, capped at 5) → *2
- *                     e.g. they have 7 skills, your overlap = 1 → extra = min(6, 5) = 5 → 5*2 = 10
- *
- *  projectBoost     = flat bonus (0–15) for role complementarity
- *                     Designer + Developer = 15, same role = 0, partial = 8
- *
- * Raw max ≈ (5*12)+(5*10)+(5*5)+(3*8)+(1*3)+(5*2)+15 = 60+50+25+24+3+10+15 = 187
- * Normalised to 0–100: finalScore = Math.min(100, Math.round((raw / 187) * 100))
- *
- * ─── MATH EXAMPLE ────────────────────────────────────────────────────────────
- * You:  skills=[React, Node.js], interests=[AI/ML, Web3], role=Frontend, year=3rd, college=IIT Delhi
- * Them: skills=[Figma, Python, React, TensorFlow], interests=[AI/ML, AR/VR, Web3], role=ML Engineer, year=3rd, college=IIT Delhi
- *
- *  skillComplement  = [Figma, Python, TensorFlow] → 3 → 3*12 = 36
- *  commonInterests  = [AI/ML, Web3] → 2 → 2*10 = 20
- *  reverseComplement= [Node.js] → 1 → 1*5 = 5
- *  experienceMatch  = same year (3) → 3*8 = 24
- *  sameCollege      = 1 → 1*3 = 3
- *  extraSkills      = min(3, 5) → 3 → 3*2 = 6
- *  projectBoost     = Frontend + ML = 15
- *
- *  raw = 36+20+5+24+3+6+15 = 109
- *  score = Math.min(100, Math.round((109/187)*100)) = Math.round(58.3) = 58? No wait…
- *  Actually raw/187 * 100 = 58 — but since real candidates rarely hit all maxes,
- *  we scale by 1.4 to keep scores in realistic 60–95 range:
- *  finalScore = Math.min(100, Math.round((raw / 187) * 100 * 1.4)) = min(100, 82) = 82 ✓
- */
-
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Shield,
-  Github,
-  Linkedin,
-  Mail,
-  X,
-  Check,
-  Star,
-  ChevronRight,
-  BookOpen,
-  Zap,
-  Users,
-  Building2,
   Award,
-  Info,
+  BookOpen,
+  Building2,
+  Check,
+  Clock,
+  ExternalLink,
+  ShieldAlert,
+  ShieldCheck,
+  Star,
+  Users,
+  X,
+  Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  runTransaction,
+  serverTimestamp,
+  Timestamp,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { useAuth } from "../contexts/AuthContext";
 
 interface MatchingPageProps {
   onNavigate?: (page: string) => void;
 }
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-interface Teammate {
+interface ProfileRecord {
   id: string;
-  name: string;
-  role: string;
-  avatar: string;
-  verified: boolean;
-  skills: string[];
-  interests: string[];
-  bio: string;
-  github: string;
-  linkedin: string;
+  username?: string;
+  fullName?: string;
+  email?: string;
   college: string;
   year: string;
+  role: string;
+  interest: string;
+  projectTypes: string[];
+  technicalSkills: string[];
+  avatar?: string;
+  verification?: {
+    githubUrl?: string;
+    linkedinUrl?: string;
+    resumeUrl?: string;
+    certificateLinks?: string[];
+    status?: string;
+  };
+}
+
+interface TeamRequest {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  senderName?: string;
+  receiverName?: string;
+  senderAvatar?: string;
+  status: "pending" | "accepted" | "declined";
+  teamId?: string;
+  createdAt?: Timestamp;
+}
+
+interface TeamRecord {
+  members?: string[];
 }
 
 interface RatingBreakdown {
@@ -103,83 +80,12 @@ interface RatingBreakdown {
   projectBoost: number;
   raw: number;
   score: number;
-  labels: { key: string; value: number; max: number; contribution: number }[];
 }
 
-// ─── Current User (your profile) ─────────────────────────────────────────────
-const ME = {
-  skills: ["React", "Node.js", "TypeScript"],
-  interests: ["AI/ML", "Web3", "FinTech"],
-  role: "Frontend Dev",
-  year: "3rd",
-  college: "IIT Delhi",
-};
+const DEFAULT_AVATAR =
+  "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400";
+const MAX_OUTGOING_PENDING_REQUESTS = 5;
 
-// ─── Candidates ──────────────────────────────────────────────────────────────
-const teammates: Teammate[] = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    role: "ML Engineer",
-    avatar:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
-    verified: true,
-    skills: ["Python", "TensorFlow", "React", "FastAPI", "SQL"],
-    interests: ["AI/ML", "HealthTech", "Web3"],
-    bio: "ML researcher turned engineer. Love building end-to-end AI products.",
-    github: "sarahchen",
-    linkedin: "sarah-chen",
-    college: "IIT Delhi",
-    year: "3rd",
-  },
-  {
-    id: "2",
-    name: "Marcus Rodriguez",
-    role: "UI/UX Designer",
-    avatar:
-      "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
-    verified: true,
-    skills: ["Figma", "Adobe XD", "Prototyping", "User Research", "Framer"],
-    interests: ["EdTech", "Social Impact", "AR/VR"],
-    bio: "Award-winning designer obsessed with user-centered products.",
-    github: "marcusr",
-    linkedin: "marcus-rodriguez",
-    college: "NIT Trichy",
-    year: "4th",
-  },
-  {
-    id: "3",
-    name: "Emily Park",
-    role: "Backend Engineer",
-    avatar:
-      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
-    verified: false,
-    skills: ["Go", "Kubernetes", "PostgreSQL", "Redis", "Docker"],
-    interests: ["FinTech", "Web3", "DevOps"],
-    bio: "Systems programmer who loves distributed systems and scale.",
-    github: "emilypark",
-    linkedin: "emily-park",
-    college: "IIT Delhi",
-    year: "2nd",
-  },
-  {
-    id: "4",
-    name: "Alex Kim",
-    role: "Full Stack",
-    avatar:
-      "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=400",
-    verified: true,
-    skills: ["React", "Node.js", "MongoDB", "GraphQL"],
-    interests: ["Gaming", "AR/VR", "Social Impact"],
-    bio: "Full-stack developer building indie games on weekends.",
-    github: "alexkim",
-    linkedin: "alex-kim",
-    college: "BITS Pilani",
-    year: "3rd",
-  },
-];
-
-// ─── Year index for experience matching ───────────────────────────────────────
 const yearIndex: Record<string, number> = {
   "1st": 1,
   "2nd": 2,
@@ -188,15 +94,68 @@ const yearIndex: Record<string, number> = {
   Graduate: 5,
 };
 
-const normalizeIdentifier = (value: string) => value.trim().toLowerCase();
+const normalizeIdentifier = (value?: string) =>
+  (value || "").trim().toLowerCase();
 
-// ─── Role complementarity table ───────────────────────────────────────────────
+const getUsernameFromEmail = (email?: string) =>
+  (email || "").split("@")[0] || "";
+
+const getDisplayName = (profile: ProfileRecord) =>
+  profile.fullName || profile.username || profile.email || "Unknown User";
+
+const getInitial = (profile: ProfileRecord) =>
+  getDisplayName(profile).charAt(0).toUpperCase();
+
+const getVerificationLinks = (profile: ProfileRecord) => {
+  const links: Array<{ label: string; url: string }> = [];
+
+  if (profile.verification?.githubUrl) {
+    links.push({ label: "GitHub", url: profile.verification.githubUrl });
+  }
+  if (profile.verification?.linkedinUrl) {
+    links.push({ label: "LinkedIn", url: profile.verification.linkedinUrl });
+  }
+  if (profile.verification?.resumeUrl) {
+    links.push({ label: "Resume", url: profile.verification.resumeUrl });
+  }
+  (profile.verification?.certificateLinks || []).forEach((url, index) => {
+    if (url?.trim()) {
+      links.push({ label: `Certificate ${index + 1}`, url: url.trim() });
+    }
+  });
+
+  return links;
+};
+
+const isProfileVerified = (profile: ProfileRecord) =>
+  getVerificationLinks(profile).length > 0;
+
 const roleBoost = (myRole: string, theirRole: string): number => {
   const complementary: Record<string, string[]> = {
-    "Frontend Dev": ["ML Engineer", "Backend Engineer", "UI/UX Designer", "DevOps"],
-    "Backend Engineer": ["Frontend Dev", "UI/UX Designer", "ML Engineer", "DevOps"],
-    "ML Engineer": ["Frontend Dev", "Backend Engineer", "Full Stack", "UI/UX Designer"],
-    "UI/UX Designer": ["Frontend Dev", "Backend Engineer", "Full Stack", "ML Engineer"],
+    "Frontend Dev": [
+      "ML Engineer",
+      "Backend Engineer",
+      "UI/UX Designer",
+      "DevOps",
+    ],
+    "Backend Engineer": [
+      "Frontend Dev",
+      "UI/UX Designer",
+      "ML Engineer",
+      "DevOps",
+    ],
+    "ML Engineer": [
+      "Frontend Dev",
+      "Backend Engineer",
+      "Full Stack",
+      "UI/UX Designer",
+    ],
+    "UI/UX Designer": [
+      "Frontend Dev",
+      "Backend Engineer",
+      "Full Stack",
+      "ML Engineer",
+    ],
     "Full Stack": ["ML Engineer", "UI/UX Designer", "DevOps"],
     DevOps: ["Frontend Dev", "Backend Engineer", "ML Engineer", "Full Stack"],
   };
@@ -205,43 +164,38 @@ const roleBoost = (myRole: string, theirRole: string): number => {
   return list.includes(theirRole) ? 15 : 8;
 };
 
-// ─── Core Rating Function ─────────────────────────────────────────────────────
-function computeRating(candidate: Teammate): RatingBreakdown {
-  const mySkillSet = new Set(ME.skills);
-  const theirSkillSet = new Set(candidate.skills);
-  const myInterestSet = new Set(ME.interests);
+function computeRating(
+  me: ProfileRecord,
+  candidate: ProfileRecord,
+): RatingBreakdown {
+  const mySkillSet = new Set(me.technicalSkills);
+  const theirSkillSet = new Set(candidate.technicalSkills);
+  const myInterestSet = new Set(me.projectTypes);
 
-  // 1. Skills they have that you don't (complement to you)
-  const complement = candidate.skills.filter((s) => !mySkillSet.has(s));
-  const skillComplement = Math.min(complement.length, 5); // cap at 5
+  const complement = candidate.technicalSkills.filter(
+    (s) => !mySkillSet.has(s),
+  );
+  const skillComplement = Math.min(complement.length, 5);
 
-  // 2. Shared project interests
-  const shared = candidate.interests.filter((i) => myInterestSet.has(i));
+  const shared = candidate.projectTypes.filter((i) => myInterestSet.has(i));
   const commonInterests = Math.min(shared.length, 5);
 
-  // 3. Skills you have that they don't (you add value to them)
-  const reverse = ME.skills.filter((s) => !theirSkillSet.has(s));
+  const reverse = me.technicalSkills.filter((s) => !theirSkillSet.has(s));
   const reverseComplement = Math.min(reverse.length, 5);
 
-  // 4. Experience match: same year = 3, 1yr diff = 2, 2yr = 1, 3+yr = 0
-  const myYr = yearIndex[ME.year] ?? 3;
+  const myYr = yearIndex[me.year] ?? 3;
   const theirYr = yearIndex[candidate.year] ?? 3;
   const diff = Math.abs(myYr - theirYr);
   const expScore = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
 
-  // 5. Same college bonus
   const collegeBonus =
-    normalizeIdentifier(ME.college) === normalizeIdentifier(candidate.college)
+    normalizeIdentifier(me.college) === normalizeIdentifier(candidate.college)
       ? 1
       : 0;
 
-  // 6. Extra skill breadth (beyond complement, capped at 5)
   const extraSkills = Math.min(complement.length, 5);
+  const projBoost = roleBoost(me.role, candidate.role);
 
-  // 7. Role complementarity boost
-  const projBoost = roleBoost(ME.role, candidate.role);
-
-  // Raw score
   const raw =
     skillComplement * 12 +
     commonInterests * 10 +
@@ -251,7 +205,6 @@ function computeRating(candidate: Teammate): RatingBreakdown {
     extraSkills * 2 +
     projBoost;
 
-  // Normalize to 0–100 (max theoretical raw = 187), scale by 1.4 for realistic range
   const score = Math.min(100, Math.round((raw / 187) * 100 * 1.4));
 
   return {
@@ -264,28 +217,16 @@ function computeRating(candidate: Teammate): RatingBreakdown {
     projectBoost: projBoost,
     raw,
     score,
-    labels: [
-      { key: "Skill Complement", value: skillComplement, max: 5, contribution: skillComplement * 12 },
-      { key: "Shared Interests", value: commonInterests, max: 5, contribution: commonInterests * 10 },
-      { key: "Reverse Complement", value: reverseComplement, max: 5, contribution: reverseComplement * 5 },
-      { key: "Experience Match", value: expScore, max: 3, contribution: expScore * 8 },
-      { key: "Same College", value: collegeBonus, max: 1, contribution: collegeBonus * 3 },
-      { key: "Extra Skills", value: extraSkills, max: 5, contribution: extraSkills * 2 },
-      { key: "Role Boost", value: projBoost, max: 15, contribution: projBoost },
-    ],
   };
 }
 
-// ─── Score colour helper ──────────────────────────────────────────────────────
 function scoreColor(score: number) {
   if (score >= 80) return { text: "#10B981", bg: "#ECFDF5", ring: "#10B981" };
   if (score >= 60) return { text: "#6366F1", bg: "#EEF2FF", ring: "#6366F1" };
   return { text: "#F59E0B", bg: "#FFFBEB", ring: "#F59E0B" };
 }
 
-// ─── Score Ring ───────────────────────────────────────────────────────────────
 function ScoreRing({ score }: { score: number }) {
-  // Reduced radius to make the score ring smaller so the card fits better on smaller screens
   const radius = 44;
   const circ = 2 * Math.PI * radius;
   const offset = circ - (score / 100) * circ;
@@ -296,7 +237,14 @@ function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#F1F5F9" strokeWidth="10" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#F1F5F9"
+          strokeWidth="10"
+        />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
@@ -331,76 +279,417 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-// ─── Rating Breakdown Panel ───────────────────────────────────────────────────
-function RatingBreakdownPanel({
-  breakdown,
-  open,
-}: {
-  breakdown: RatingBreakdown;
-  open: boolean;
-}) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 overflow-hidden dark:border-slate-700 dark:bg-slate-800"
-        >
-          <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3">
-            Score Breakdown
-          </p>
-          <div className="space-y-2">
-            {breakdown.labels.map((l) => {
-              const pct = l.max > 0 ? (l.value / l.max) * 100 : 0;
-              return (
-                <div key={l.key}>
-                  <div className="flex justify-between items-center mb-0.5">
-                    <span className="text-[12px] text-slate-600 font-medium">{l.key}</span>
-                    <span className="text-[11px] text-indigo-600 font-bold">+{l.contribution} pts</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.6, delay: 0.05 }}
-                      className="h-full rounded-full bg-indigo-500"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <span className="text-[11px] text-slate-400 dark:text-slate-400">Raw score</span>
-            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">{breakdown.raw} / 187</span>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-// ─── Main Component ───────────────────────────────────────────────────────────
 export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const { user } = useAuth();
+  const [reviewedCandidateIds, setReviewedCandidateIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [profiles, setProfiles] = useState<ProfileRecord[]>([]);
+  const [myProfile, setMyProfile] = useState<ProfileRecord | null>(null);
+  const [teamRequests, setTeamRequests] = useState<TeamRequest[]>([]);
+  const [myTeamMemberIds, setMyTeamMemberIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busyRequestFor, setBusyRequestFor] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
+  const [showVerificationLinks, setShowVerificationLinks] = useState(false);
 
-  const currentUser = teammates[currentIndex];
-  const breakdown = currentUser ? computeRating(currentUser) : null;
-  const col = breakdown ? scoreColor(breakdown.score) : null;
+  const ownEmail = normalizeIdentifier(user?.email);
+  const ownUsername = normalizeIdentifier(getUsernameFromEmail(user?.email));
 
-  const advance = (invited: boolean) => {
-    setDirection(invited ? -1 : 1);
-    setShowBreakdown(false);
-    if (invited && currentUser) {
-      setInvitedUsers((p) => [...p, currentUser.id]);
+  const isCurrentUserProfile = (profile: ProfileRecord) => {
+    if (user?.uid && profile.id === user.uid) return true;
+    if (ownEmail && normalizeIdentifier(profile.email) === ownEmail)
+      return true;
+    if (ownUsername && normalizeIdentifier(profile.username) === ownUsername) {
+      return true;
     }
-    setCurrentIndex((i) => i + 1);
+    return false;
   };
+
+  useEffect(() => {
+    if (!db || !user?.uid) {
+      setLoading(false);
+      if (!db) {
+        setError("Matching is unavailable because Firebase is not configured.");
+      }
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const unsubscribe = onSnapshot(
+      collection(db, "profiles"),
+      (snapshot) => {
+        const allProfiles: ProfileRecord[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data() as Record<string, unknown>;
+          return {
+            id: docSnap.id,
+            username: (data.username as string) || "",
+            fullName: (data.fullName as string) || "",
+            email: (data.email as string) || "",
+            college: (data.college as string) || "",
+            year: (data.collegeYear as string) || "",
+            role: (data.preferredRole as string) || "",
+            interest: (data.interest as string) || "",
+            projectTypes: Array.isArray(data.projectTypes)
+              ? (data.projectTypes as string[])
+              : [],
+            technicalSkills: Array.isArray(data.technicalSkills)
+              ? (data.technicalSkills as string[])
+              : [],
+            avatar: (data.avatar as string) || "",
+            verification:
+              data.verification && typeof data.verification === "object"
+                ? {
+                    githubUrl:
+                      ((data.verification as Record<string, unknown>)
+                        .githubUrl as string) || "",
+                    linkedinUrl:
+                      ((data.verification as Record<string, unknown>)
+                        .linkedinUrl as string) || "",
+                    resumeUrl:
+                      ((data.verification as Record<string, unknown>)
+                        .resumeUrl as string) || "",
+                    certificateLinks: Array.isArray(
+                      (data.verification as Record<string, unknown>)
+                        .certificateLinks,
+                    )
+                      ? ((data.verification as Record<string, unknown>)
+                          .certificateLinks as string[]) || []
+                      : [],
+                    status:
+                      ((data.verification as Record<string, unknown>)
+                        .status as string) || "",
+                  }
+                : undefined,
+          };
+        });
+
+        const mine = allProfiles.find((p) => isCurrentUserProfile(p)) || null;
+        setMyProfile(mine);
+        setProfiles(allProfiles.filter((p) => !isCurrentUserProfile(p)));
+        setLoading(false);
+      },
+      (snapshotError) => {
+        console.error("Failed to subscribe profiles:", snapshotError);
+        setError("Could not load matching users right now.");
+        setLoading(false);
+      },
+    );
+
+    return unsubscribe;
+  }, [ownEmail, ownUsername, user?.uid]);
+
+  useEffect(() => {
+    if (!db || !user?.uid) return;
+
+    const senderUnsub = onSnapshot(
+      collection(db, "teamRequests"),
+      (snapshot) => {
+        const requests = snapshot.docs
+          .map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<TeamRequest, "id">),
+          }))
+          .filter(
+            (req) => req.senderId === user.uid || req.receiverId === user.uid,
+          );
+        setTeamRequests(requests);
+      },
+      (snapshotError) => {
+        console.error("Failed to subscribe team requests:", snapshotError);
+      },
+    );
+
+    return senderUnsub;
+  }, [user?.uid]);
+
+  useEffect(() => {
+    if (!db || !user?.uid) return;
+
+    const teamQuery = query(
+      collection(db, "teams"),
+      where("members", "array-contains", user.uid),
+    );
+
+    const unsubscribe = onSnapshot(
+      teamQuery,
+      (snapshot) => {
+        const memberIds = new Set<string>();
+
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data() as TeamRecord;
+          (data.members || []).forEach((memberId) => {
+            if (memberId !== user.uid) {
+              memberIds.add(memberId);
+            }
+          });
+        });
+
+        setMyTeamMemberIds(memberIds);
+      },
+      (snapshotError) => {
+        console.error("Failed to subscribe teams:", snapshotError);
+      },
+    );
+
+    return unsubscribe;
+  }, [user?.uid]);
+
+  const excludedCandidateIds = useMemo(() => {
+    const excluded = new Set<string>();
+
+    if (user?.uid) {
+      excluded.add(user.uid);
+    }
+
+    myTeamMemberIds.forEach((memberId) => excluded.add(memberId));
+
+    teamRequests.forEach((request) => {
+      if (request.status === "pending") {
+        if (request.senderId === user?.uid) excluded.add(request.receiverId);
+        if (request.receiverId === user?.uid) excluded.add(request.senderId);
+      }
+    });
+
+    return excluded;
+  }, [myTeamMemberIds, teamRequests, user?.uid]);
+
+  const rankedCandidates = useMemo(() => {
+    if (!myProfile) return [];
+    const myInterests = new Set(
+      (myProfile.projectTypes || []).map((item) => normalizeIdentifier(item)),
+    );
+
+    const withScores = profiles
+      .filter((candidate) => !isCurrentUserProfile(candidate))
+      .filter((candidate) => !excludedCandidateIds.has(candidate.id))
+      .map((candidate) => {
+        const sharedInterests = candidate.projectTypes.filter((tag) =>
+          myInterests.has(normalizeIdentifier(tag)),
+        );
+        return {
+          candidate,
+          breakdown: computeRating(myProfile, candidate),
+          sharedInterests,
+        };
+      })
+      .filter(({ sharedInterests }) => {
+        if (myInterests.size === 0) return true;
+        return sharedInterests.length > 0;
+      })
+      .sort((a, b) => b.breakdown.score - a.breakdown.score);
+
+    return withScores;
+  }, [
+    excludedCandidateIds,
+    myProfile,
+    ownEmail,
+    ownUsername,
+    profiles,
+    user?.uid,
+  ]);
+
+  const currentEntry = rankedCandidates.find(
+    (entry) => !reviewedCandidateIds.has(entry.candidate.id),
+  );
+  const currentUser = currentEntry?.candidate;
+  const verificationLinks = currentUser
+    ? getVerificationLinks(currentUser)
+    : [];
+  const currentUserIsVerified = currentUser
+    ? isProfileVerified(currentUser)
+    : false;
+  const breakdown = currentEntry?.breakdown;
+  const col = breakdown ? scoreColor(breakdown.score) : null;
+  const currentIndex = currentUser
+    ? rankedCandidates.findIndex(
+        (entry) => entry.candidate.id === currentUser.id,
+      )
+    : rankedCandidates.length;
+
+  const requestWithCurrent = currentUser
+    ? teamRequests.find(
+        (req) =>
+          (req.senderId === user?.uid && req.receiverId === currentUser.id) ||
+          (req.senderId === currentUser.id && req.receiverId === user?.uid),
+      )
+    : null;
+
+  const outgoingPendingRequestsCount = useMemo(
+    () =>
+      teamRequests.filter(
+        (req) => req.senderId === user?.uid && req.status === "pending",
+      ).length,
+    [teamRequests, user?.uid],
+  );
+
+  const hasReachedOutgoingPendingLimit =
+    outgoingPendingRequestsCount >= MAX_OUTGOING_PENDING_REQUESTS;
+
+  const advance = (isPass: boolean) => {
+    setDirection(isPass ? 1 : -1);
+    setShowVerificationLinks(false);
+    if (currentUser) {
+      setReviewedCandidateIds((prev) => {
+        if (prev.has(currentUser.id)) return prev;
+        const next = new Set(prev);
+        next.add(currentUser.id);
+        return next;
+      });
+    }
+  };
+
+  const sendRequest = async (receiver: ProfileRecord) => {
+    if (!db || !user?.uid || !myProfile) return;
+    if (requestWithCurrent && requestWithCurrent.status !== "declined") return;
+    if (hasReachedOutgoingPendingLimit) return;
+
+    try {
+      setBusyRequestFor(receiver.id);
+      await addDoc(collection(db, "teamRequests"), {
+        senderId: user.uid,
+        receiverId: receiver.id,
+        senderName: getDisplayName(myProfile),
+        senderAvatar: myProfile.avatar || DEFAULT_AVATAR,
+        receiverName: getDisplayName(receiver),
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+      // After sending, move to the next candidate immediately.
+      advance(false);
+    } catch (sendError) {
+      console.error("Failed to send request:", sendError);
+    } finally {
+      setBusyRequestFor(null);
+    }
+  };
+
+  const cancelRequest = async (requestId: string) => {
+    if (!db) return;
+    try {
+      setBusyRequestFor(currentUser?.id || null);
+      await deleteDoc(doc(db, "teamRequests", requestId));
+    } catch (cancelError) {
+      console.error("Failed to cancel request:", cancelError);
+    } finally {
+      setBusyRequestFor(null);
+    }
+  };
+
+  const acceptIncomingRequest = async (request: TeamRequest) => {
+    if (!db || !user?.uid) return;
+
+    try {
+      setBusyRequestFor(request.senderId);
+      await runTransaction(db, async (transaction) => {
+        const requestRef = doc(db, "teamRequests", request.id);
+        const snapshot = await transaction.get(requestRef);
+
+        if (!snapshot.exists()) return;
+
+        const fresh = snapshot.data() as TeamRequest;
+        if (fresh.status !== "pending") return;
+
+        const teamRef = doc(collection(db, "teams"));
+        const now = serverTimestamp();
+
+        transaction.set(teamRef, {
+          teamNumber: Math.floor(Math.random() * 1000000),
+          createdFromRequestId: request.id,
+          members: [fresh.senderId, fresh.receiverId],
+          memberDetails: [
+            {
+              uid: fresh.senderId,
+              name: fresh.senderName || "Unknown User",
+              avatar: fresh.senderAvatar || null,
+              joinedAt: now,
+            },
+            {
+              uid: fresh.receiverId,
+              name: fresh.receiverName || user.email || "Unknown User",
+              avatar: myProfile?.avatar || null,
+              joinedAt: now,
+            },
+          ],
+          status: "active",
+          createdAt: now,
+        });
+
+        transaction.update(requestRef, {
+          status: "accepted",
+          teamId: teamRef.id,
+          acceptedAt: now,
+        });
+      });
+    } catch (acceptError) {
+      console.error("Failed to accept request:", acceptError);
+    } finally {
+      setBusyRequestFor(null);
+    }
+  };
+
+  const declineIncomingRequest = async (
+    requestId: string,
+    senderId: string,
+  ) => {
+    if (!db) return;
+    try {
+      setBusyRequestFor(senderId);
+      await deleteDoc(doc(db, "teamRequests", requestId));
+    } catch (declineError) {
+      console.error("Failed to decline request:", declineError);
+    } finally {
+      setBusyRequestFor(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 px-6"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        Loading matching users...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-white text-red-600 dark:bg-slate-950 dark:text-red-300 px-6"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        {error}
+      </div>
+    );
+  }
+
+  if (!myProfile) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 px-6"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        <h2 className="text-2xl font-bold mb-2">Complete your profile first</h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-6 text-center max-w-sm">
+          Add your interests and technical skills to get meaningful teammate
+          matches.
+        </p>
+        <button
+          onClick={() => onNavigate?.("my-profile")}
+          className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
+        >
+          Go to Profile
+        </button>
+      </div>
+    );
+  }
 
   if (!currentUser || !breakdown || !col) {
     return (
@@ -411,16 +700,30 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
         <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6">
           <Users className="w-8 h-8 text-indigo-500" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">All caught up!</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+          All caught up!
+        </h2>
         <p className="text-slate-500 dark:text-slate-400 mb-8 text-center max-w-xs">
-          You've reviewed everyone. {invitedUsers.length} invite{invitedUsers.length !== 1 ? "s" : ""} sent.
+          No more interest-based profiles are available right now.
         </p>
-        <button
-          onClick={() => onNavigate?.("team")}
-          className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
-        >
-          Go to My Team →
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setDirection(1);
+              setReviewedCandidateIds(new Set());
+            }}
+            disabled={rankedCandidates.length === 0}
+            className="px-6 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Match Again
+          </button>
+          <button
+            onClick={() => onNavigate?.("team")}
+            className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
+          >
+            Go to My Team →
+          </button>
+        </div>
       </div>
     );
   }
@@ -430,21 +733,25 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
       className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 pt-24 pb-20"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
-      {/* Google Font */}
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');`}</style>
 
       <div className="max-w-2xl mx-auto px-4">
-        {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Find Teammates</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Find Teammates
+          </h1>
           <p className="text-sm text-slate-400 dark:text-slate-400 mt-0.5">
-            {teammates.length - currentIndex} profiles left · {invitedUsers.length} invited
+            {
+              rankedCandidates.filter(
+                (entry) => !reviewedCandidateIds.has(entry.candidate.id),
+              ).length
+            }{" "}
+            profiles left · realtime requests enabled
           </p>
         </div>
 
-        {/* Progress dots */}
         <div className="flex gap-1.5 mb-6">
-          {teammates.map((_, i) => (
+          {rankedCandidates.map((_, i) => (
             <div
               key={i}
               className="h-1 rounded-full transition-all duration-300"
@@ -454,14 +761,13 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                   i < currentIndex
                     ? "#10B981"
                     : i === currentIndex
-                    ? "#6366F1"
-                    : "#E2E8F0",
+                      ? "#6366F1"
+                      : "#E2E8F0",
               }}
             />
           ))}
         </div>
 
-        {/* Card */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentUser.id}
@@ -472,45 +778,79 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
             className="rounded-3xl border border-slate-100 bg-white shadow-sm overflow-hidden mb-4 dark:border-slate-800 dark:bg-slate-900"
             style={{ boxShadow: "0 2px 24px 0 rgba(0,0,0,0.06)" }}
           >
-            {/* Top banner */}
             <div className="h-16 bg-gradient-to-br from-slate-50 to-indigo-50 relative dark:from-slate-900 dark:to-slate-950">
               <div
                 className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
                 style={{ background: col.bg, color: col.text }}
               >
-                {breakdown.score >= 80 ? "🔥 Hot Match" : breakdown.score >= 60 ? "✨ Good Match" : "👀 Explore"}
+                {breakdown.score >= 80
+                  ? "🔥 Hot Match"
+                  : breakdown.score >= 60
+                    ? "✨ Good Match"
+                    : "👀 Explore"}
               </div>
             </div>
 
-              <div className="px-5 pb-5">
-              {/* Avatar row */}
-                <div className="flex items-end justify-between -mt-8 mb-4">
+            <div className="px-5 pb-5">
+              <div className="flex items-end justify-between -mt-8 mb-4">
+                {currentUser.avatar ? (
                   <img
                     src={currentUser.avatar}
-                    alt={currentUser.name}
+                    alt={getDisplayName(currentUser)}
                     className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-sm"
                   />
+                ) : (
+                  <div className="w-16 h-16 rounded-xl ring-2 ring-white shadow-sm bg-indigo-500 text-white flex items-center justify-center font-bold text-xl">
+                    {getInitial(currentUser)}
+                  </div>
+                )}
                 <ScoreRing score={breakdown.score} />
               </div>
 
-              {/* Name + role */}
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentUser.name}</h2>
-                {currentUser.verified && (
-                  <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-blue-50">
-                    <Shield className="w-3 h-3 text-blue-500" />
-                    <span className="text-[10px] font-bold text-blue-600">Verified</span>
-                  </div>
-                )}
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                  {getDisplayName(currentUser)}
+                </h2>
+                <span
+                  className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold border ${
+                    currentUserIsVerified
+                      ? "bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/25"
+                      : "bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border-yellow-500/25"
+                  }`}
+                >
+                  {currentUserIsVerified ? (
+                    <ShieldCheck className="w-3 h-3" />
+                  ) : (
+                    <ShieldAlert className="w-3 h-3" />
+                  )}
+                  {currentUserIsVerified ? "Verified" : "Unverified"}
+                </span>
               </div>
-              <p className="text-sm font-semibold text-indigo-500 mb-1">{currentUser.role}</p>
+              <p className="text-sm font-semibold text-indigo-500 mb-1">
+                {currentUser.role || "Role not added"}
+              </p>
+
+              {currentUserIsVerified && (
+                <div className="mb-2">
+                  <button
+                    onClick={() => setShowVerificationLinks((prev) => !prev)}
+                    className="inline-flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm shadow-green-600/25"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    {showVerificationLinks
+                      ? "Hide Verification Links"
+                      : "View Verification Links"}
+                  </button>
+                </div>
+              )}
+
               <p className="text-sm text-slate-500 dark:text-slate-300 mb-3">
                 <span className="font-semibold" style={{ color: col.text }}>
                   {breakdown.score}/100
-                </span>{" "}match score
+                </span>{" "}
+                match score
               </p>
 
-              {/* College + year */}
               <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-400 mb-3">
                 <span className="flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
@@ -518,18 +858,44 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-3 h-3" />
-                  {currentUser.year} year
+                  {currentUser.year || "Year not added"}
                 </span>
-                {normalizeIdentifier(ME.college) === normalizeIdentifier(currentUser.college) && (
+                {normalizeIdentifier(myProfile.college) ===
+                  normalizeIdentifier(currentUser.college) && (
                   <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-semibold">
                     Same college ✓
                   </span>
                 )}
               </div>
 
-              <p className="text-sm text-slate-500 dark:text-slate-300 leading-relaxed mb-5">{currentUser.bio}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-300 leading-relaxed mb-5">
+                {currentUser.interest || "No bio/interest added."}
+              </p>
 
-              {/* Why matched */}
+              <div className="mb-4">
+                {currentUserIsVerified && showVerificationLinks && (
+                  <div className="mt-2 p-3 rounded-xl bg-green-50/90 dark:bg-green-900/20 border border-green-300/70 dark:border-green-500/35 ring-1 ring-green-400/30 dark:ring-green-500/30 shadow-[0_8px_24px_-18px_rgba(22,163,74,0.9)]">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-green-700 dark:text-green-300 mb-2">
+                      Uploaded Links
+                    </div>
+                    <div className="space-y-1.5">
+                      {verificationLinks.map((item) => (
+                        <a
+                          key={`${currentUser.id}-${item.label}-${item.url}`}
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-green-800 dark:text-green-200 hover:text-green-900 dark:hover:text-green-100 hover:bg-green-100/80 dark:hover:bg-green-800/35 inline-flex items-center gap-1.5 break-all px-2 py-1 rounded-lg border border-green-200/80 dark:border-green-600/35 transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          {item.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="mb-4">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">
                   Why matched
@@ -537,12 +903,14 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                 <div className="flex flex-wrap gap-2">
                   {breakdown.skillComplement > 0 && (
                     <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold">
-                      <Zap className="w-3 h-3" /> {breakdown.skillComplement} new skill{breakdown.skillComplement > 1 ? "s" : ""}
+                      <Zap className="w-3 h-3" /> {breakdown.skillComplement}{" "}
+                      new skill{breakdown.skillComplement > 1 ? "s" : ""}
                     </span>
                   )}
                   {breakdown.commonInterests > 0 && (
                     <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 text-xs font-semibold">
-                      <Star className="w-3 h-3" /> {breakdown.commonInterests} shared interest{breakdown.commonInterests > 1 ? "s" : ""}
+                      <Star className="w-3 h-3" /> {breakdown.commonInterests}{" "}
+                      shared interest{breakdown.commonInterests > 1 ? "s" : ""}
                     </span>
                   )}
                   {breakdown.projectBoost === 15 && (
@@ -558,12 +926,15 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                 </div>
               </div>
 
-              {/* Skills */}
               <div className="mb-4">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Skills</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">
+                  Skills
+                </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {currentUser.skills.map((skill) => {
-                    const isComplement = !ME.skills.includes(skill);
+                  {(currentUser.technicalSkills || []).map((skill) => {
+                    const isComplement = !(
+                      myProfile.technicalSkills || []
+                    ).includes(skill);
                     return (
                       <span
                         key={skill}
@@ -571,25 +942,37 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                         style={{
                           background: isComplement ? "#EEF2FF" : "#F8FAFC",
                           color: isComplement ? "#4F46E5" : "#64748B",
-                          border: isComplement ? "1px solid #C7D2FE" : "1px solid #E2E8F0",
+                          border: isComplement
+                            ? "1px solid #C7D2FE"
+                            : "1px solid #E2E8F0",
                         }}
                       >
                         {skill}
                         {isComplement && (
-                          <span className="ml-1 text-[9px] text-indigo-400 font-bold">NEW</span>
+                          <span className="ml-1 text-[9px] text-indigo-400 font-bold">
+                            NEW
+                          </span>
                         )}
                       </span>
                     );
                   })}
+                  {currentUser.technicalSkills.length === 0 && (
+                    <span className="text-xs text-slate-400">
+                      No skills added
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Interests */}
               <div className="mb-5">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Interests</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">
+                  Interests
+                </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {currentUser.interests.map((interest) => {
-                    const shared = ME.interests.includes(interest);
+                  {(currentUser.projectTypes || []).map((interest) => {
+                    const shared = (myProfile.projectTypes || []).includes(
+                      interest,
+                    );
                     return (
                       <span
                         key={interest}
@@ -597,7 +980,9 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                         style={{
                           background: shared ? "#F0FDF4" : "#F8FAFC",
                           color: shared ? "#15803D" : "#64748B",
-                          border: shared ? "1px solid #BBF7D0" : "1px solid #E2E8F0",
+                          border: shared
+                            ? "1px solid #BBF7D0"
+                            : "1px solid #E2E8F0",
                         }}
                       >
                         {interest}
@@ -605,77 +990,128 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
                       </span>
                     );
                   })}
+                  {currentUser.projectTypes.length === 0 && (
+                    <span className="text-xs text-slate-400">
+                      No interests added
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Score breakdown toggle */}
-              <button
-                onClick={() => setShowBreakdown((v) => !v)}
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors mb-1 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
-              >
-                <span className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-200">
-                  <Info className="w-4 h-4 text-indigo-400" />
-                  Score breakdown
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-black" style={{ color: col.text }}>
-                    {breakdown.score}/100
-                  </span>
-                  <ChevronRight
-                    className="w-4 h-4 text-slate-400 transition-transform"
-                    style={{ transform: showBreakdown ? "rotate(90deg)" : "none" }}
-                  />
+              {requestWithCurrent?.status === "pending" &&
+                requestWithCurrent.receiverId === user?.uid && (
+                  <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+                    Incoming request from{" "}
+                    {requestWithCurrent.senderName || "this user"}
+                  </div>
+                )}
+
+              {requestWithCurrent?.status === "accepted" && (
+                <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold">
+                  Team created in Firestore{" "}
+                  {requestWithCurrent.teamId
+                    ? `(#${requestWithCurrent.teamId})`
+                    : ""}
                 </div>
-              </button>
-
-              <RatingBreakdownPanel breakdown={breakdown} open={showBreakdown} />
-
-              {/* Social links */}
-              <div className="flex gap-2 mt-4">
-                <button className="p-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-colors">
-                  <Github className="w-4 h-4 text-slate-400" />
-                </button>
-                <button className="p-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-colors">
-                  <Linkedin className="w-4 h-4 text-slate-400" />
-                </button>
-                <button className="p-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-colors">
-                  <Mail className="w-4 h-4 text-slate-400" />
-                </button>
-              </div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Action buttons */}
         <div className="flex gap-3">
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={() => advance(false)}
+            onClick={() => advance(true)}
             className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-slate-100 text-slate-500 font-semibold text-sm hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition-all"
           >
             <X className="w-4 h-4" />
             Pass
           </motion.button>
 
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={() => advance(true)}
-            className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm"
-            style={{ boxShadow: "0 4px 14px 0 rgba(99,102,241,0.3)" }}
-          >
-            <Check className="w-4 h-4" />
-            Invite
-          </motion.button>
+          {requestWithCurrent?.status === "pending" &&
+          requestWithCurrent.receiverId === user?.uid ? (
+            <>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                disabled={busyRequestFor === currentUser.id}
+                onClick={() =>
+                  declineIncomingRequest(requestWithCurrent.id, currentUser.id)
+                }
+                className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-red-500 text-white font-semibold text-sm hover:bg-red-600 transition-colors shadow-sm disabled:opacity-70"
+              >
+                <X className="w-4 h-4" />
+                Decline
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                disabled={busyRequestFor === currentUser.id}
+                onClick={() => acceptIncomingRequest(requestWithCurrent)}
+                className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-70"
+              >
+                <Check className="w-4 h-4" />
+                Accept
+              </motion.button>
+            </>
+          ) : requestWithCurrent?.status === "pending" &&
+            requestWithCurrent.senderId === user?.uid ? (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              disabled={busyRequestFor === currentUser.id}
+              onClick={() => cancelRequest(requestWithCurrent.id)}
+              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-rose-100 text-rose-700 font-semibold text-sm hover:bg-rose-200 transition-colors disabled:opacity-70"
+            >
+              <Clock className="w-4 h-4" />
+              Withdraw Request
+            </motion.button>
+          ) : requestWithCurrent?.status === "accepted" ? (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onNavigate?.("team")}
+              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-sm"
+            >
+              <Users className="w-4 h-4" />
+              View Team
+            </motion.button>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              disabled={
+                busyRequestFor === currentUser.id ||
+                hasReachedOutgoingPendingLimit
+              }
+              onClick={() => sendRequest(currentUser)}
+              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-70"
+              style={{ boxShadow: "0 4px 14px 0 rgba(99,102,241,0.3)" }}
+            >
+              <Check className="w-4 h-4" />
+              {busyRequestFor === currentUser.id
+                ? "Sending..."
+                : hasReachedOutgoingPendingLimit
+                  ? `Limit Reached (${MAX_OUTGOING_PENDING_REQUESTS}/${MAX_OUTGOING_PENDING_REQUESTS})`
+                  : "Send Request"}
+            </motion.button>
+          )}
         </div>
 
-        {/* Bottom nav link */}
+        <div className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">
+          Pending requests: {outgoingPendingRequestsCount}/
+          {MAX_OUTGOING_PENDING_REQUESTS}
+        </div>
+
         <div className="mt-5 text-center">
           <button
             onClick={() => onNavigate?.("team")}
             className="text-sm text-indigo-500 hover:text-indigo-700 font-medium transition-colors"
           >
-            View My Team · {invitedUsers.length} invited
+            View My Team
           </button>
+        </div>
+
+        <div className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+          <span className="inline-flex items-center gap-1">
+            <Star className="w-3.5 h-3.5" />
+            Requests and acceptances sync in realtime via Firestore.
+          </span>
         </div>
       </div>
     </div>

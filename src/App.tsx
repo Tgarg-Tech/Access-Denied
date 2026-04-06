@@ -3,10 +3,11 @@ import { Navbar } from "./components/Navbar";
 import { SkillVerificationModal } from "./components/SkillVerificationModal";
 import { LandingPage } from "./pages/LandingPage";
 import { HackathonDashboard } from "./pages/HackathonDashboard";
-import { HackathonDetails } from "./pages/HackathonDetails";
+import { HackathonDetails } from "./pages/HackathonDetails.tsx";
 import { MatchingPage } from "./pages/MatchingPage";
 import { TeamPage } from "./pages/TeamPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ExplorePage } from "./pages/ExplorePage.tsx";
 import { AuthPage } from "./pages/AuthPage";
 import Loading from "./pages/loading.jsx";
 import Profile from "./pages/profile.jsx";
@@ -14,7 +15,16 @@ import Home from "./pages/home.jsx";
 import { useProfile } from "./contexts/ProfileContext";
 import { useAuth } from "./contexts/AuthContext";
 import { db } from "./firebase";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from "firebase/firestore";
 
 type Page =
   | "landing"
@@ -27,6 +37,7 @@ type Page =
   | "dashboard"
   | "details"
   | "matching"
+  | "explore"
   | "team";
 
 const PROTECTED_PAGES: Page[] = [
@@ -37,6 +48,7 @@ const PROTECTED_PAGES: Page[] = [
   "dashboard",
   "details",
   "matching",
+  "explore",
   "team",
 ];
 
@@ -58,7 +70,10 @@ const readProfileCompletionCache = (uid: string) => {
 
 const writeProfileCompletionCache = (uid: string, completed: boolean) => {
   try {
-    localStorage.setItem(getProfileCompletionKey(uid), completed ? "true" : "false");
+    localStorage.setItem(
+      getProfileCompletionKey(uid),
+      completed ? "true" : "false",
+    );
   } catch {
     // Ignore localStorage errors (private mode/quota) and continue.
   }
@@ -98,25 +113,67 @@ function App() {
 
         if (cancelled) return;
 
+        let savedProfile: Record<string, unknown> | null = null;
+
         if (snapshot.exists()) {
-          const saved = snapshot.data();
+          savedProfile = snapshot.data() as Record<string, unknown>;
+        } else if (user.email) {
+          // Backward compatibility: support older profile docs not stored with uid as doc id.
+          const emailQuery = query(
+            collection(db, "profiles"),
+            where("email", "==", user.email),
+          );
+          const emailMatches = await getDocs(emailQuery);
+
+          if (!cancelled && !emailMatches.empty) {
+            savedProfile = emailMatches.docs[0].data() as Record<
+              string,
+              unknown
+            >;
+
+            await setDoc(
+              profileRef,
+              {
+                ...savedProfile,
+                email: (savedProfile.email as string) || user.email,
+                avatar:
+                  (savedProfile.avatar as string) ||
+                  user.photoURL ||
+                  DEFAULT_AVATAR,
+                updatedAt: serverTimestamp(),
+              },
+              { merge: true },
+            );
+          }
+        }
+
+        if (savedProfile) {
           setProfile({
-            username: saved.username || user.email?.split("@")[0] || "",
-            fullName: saved.fullName || user.displayName || "",
-            email: saved.email || user.email || "",
-            college: saved.college || "",
-            collegeYear: saved.collegeYear || "",
-            preferredRole: saved.preferredRole || "",
-            availability: saved.availability || "",
-            interest: saved.interest || "",
-            technicalSkills: Array.isArray(saved.technicalSkills)
-              ? saved.technicalSkills
+            username:
+              (savedProfile.username as string) ||
+              user.email?.split("@")[0] ||
+              "",
+            fullName:
+              (savedProfile.fullName as string) || user.displayName || "",
+            email: (savedProfile.email as string) || user.email || "",
+            college: (savedProfile.college as string) || "",
+            collegeYear: (savedProfile.collegeYear as string) || "",
+            preferredRole: (savedProfile.preferredRole as string) || "",
+            availability: (savedProfile.availability as string) || "",
+            interest: (savedProfile.interest as string) || "",
+            technicalSkills: Array.isArray(savedProfile.technicalSkills)
+              ? (savedProfile.technicalSkills as string[])
               : [],
-            softSkills: Array.isArray(saved.softSkills) ? saved.softSkills : [],
-            projectTypes: Array.isArray(saved.projectTypes)
-              ? saved.projectTypes
+            softSkills: Array.isArray(savedProfile.softSkills)
+              ? (savedProfile.softSkills as string[])
               : [],
-            avatar: saved.avatar || user.photoURL || DEFAULT_AVATAR,
+            projectTypes: Array.isArray(savedProfile.projectTypes)
+              ? (savedProfile.projectTypes as string[])
+              : [],
+            avatar:
+              (savedProfile.avatar as string) ||
+              user.photoURL ||
+              DEFAULT_AVATAR,
           });
           setHasCompletedProfile(true);
           writeProfileCompletionCache(user.uid, true);
@@ -342,6 +399,7 @@ function App() {
       {currentPage === "matching" && (
         <MatchingPage onNavigate={handleNavigate} />
       )}
+      {currentPage === "explore" && <ExplorePage />}
       {currentPage === "team" && (
         <TeamPage
           onNavigate={handleNavigate}
@@ -357,4 +415,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
