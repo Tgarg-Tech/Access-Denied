@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Filter,
@@ -6,8 +6,15 @@ import {
   Users,
   DollarSign,
   ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  X,
+  MapPin,
+  Target,
+  Award,
+  Building
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface HackathonDashboardProps {
   onNavigate: (page: string, hackathonId?: string) => void;
@@ -24,6 +31,10 @@ const hackathons = [
     participants: 1250,
     image:
       "https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "San Francisco",
+    theme: "AI & Automation",
+    level: "Global",
+    organization: "TechCrunch"
   },
   {
     id: "2",
@@ -35,6 +46,10 @@ const hackathons = [
     participants: 980,
     image:
       "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "New York",
+    theme: "Artificial Intelligence",
+    level: "National",
+    organization: "OpenAI"
   },
   {
     id: "3",
@@ -46,6 +61,10 @@ const hackathons = [
     participants: 750,
     image:
       "https://images.pexels.com/photos/5474289/pexels-photo-5474289.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "Miami",
+    theme: "Web3 & Blockchain",
+    level: "National",
+    organization: "Ethereum Foundation"
   },
   {
     id: "4",
@@ -57,6 +76,10 @@ const hackathons = [
     participants: 620,
     image:
       "https://images.pexels.com/photos/5989928/pexels-photo-5989928.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "Boston",
+    theme: "Healthcare & Biotech",
+    level: "University",
+    organization: "MIT"
   },
   {
     id: "5",
@@ -68,6 +91,10 @@ const hackathons = [
     participants: 890,
     image:
       "https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "Seattle",
+    theme: "Environment & Climate",
+    level: "National",
+    organization: "GreenTech Foundation"
   },
   {
     id: "6",
@@ -79,12 +106,23 @@ const hackathons = [
     participants: 1100,
     image:
       "https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800",
+    city: "London",
+    theme: "Finance & Fintech",
+    level: "Global",
+    organization: "FinTech Alliance"
   },
 ];
 
 export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  
+  // Advanced filters state
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [cityFilter, setCityFilter] = useState("All");
+  const [themeFilter, setThemeFilter] = useState("All");
+  const [levelFilter, setLevelFilter] = useState("All");
+  const [orgFilter, setOrgFilter] = useState("All");
 
   useEffect(() => {
     const setNavHeight = () => {
@@ -101,12 +139,30 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
     return () => window.removeEventListener("resize", setNavHeight);
   }, []);
 
+  // Derived unique options for advanced filters
+  const cities = useMemo(() => ["All", ...Array.from(new Set(hackathons.map(h => h.city))).sort()], []);
+  const themes = useMemo(() => ["All", ...Array.from(new Set(hackathons.map(h => h.theme))).sort()], []);
+  const levels = useMemo(() => ["All", ...Array.from(new Set(hackathons.map(h => h.level))).sort()], []);
+  const orgs = useMemo(() => ["All", ...Array.from(new Set(hackathons.map(h => h.organization))).sort()], []);
+
+  const clearAdvancedFilters = () => {
+    setCityFilter("All");
+    setThemeFilter("All");
+    setLevelFilter("All");
+    setOrgFilter("All");
+  };
+
   const filteredHackathons = hackathons.filter((h) => {
     const matchesSearch = h.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "All" || h.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCity = cityFilter === "All" || h.city === cityFilter;
+    const matchesTheme = themeFilter === "All" || h.theme === themeFilter;
+    const matchesLevel = levelFilter === "All" || h.level === levelFilter;
+    const matchesOrg = orgFilter === "All" || h.organization === orgFilter;
+    
+    return matchesSearch && matchesStatus && matchesCity && matchesTheme && matchesLevel && matchesOrg;
   });
 
   return (
@@ -129,8 +185,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <Filter className="w-5 h-5 text-[#64748B] dark:text-[#94A3B8]" />
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex gap-2">
                 {["All", "Active", "Upcoming"].map((status) => (
                   <button
@@ -138,7 +193,7 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
                     onClick={() => setStatusFilter(status)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       statusFilter === status
-                        ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white"
+                        ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-lg shadow-violet-500/20"
                         : "bg-white dark:bg-[#121A2B] text-[#64748B] dark:text-[#94A3B8] border border-black/10 dark:border-white/10 hover:border-violet-500"
                     }`}
                   >
@@ -146,8 +201,135 @@ export function HackathonDashboard({ onNavigate }: HackathonDashboardProps) {
                   </button>
                 ))}
               </div>
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all border ${
+                  showAdvanced || cityFilter !== "All" || themeFilter !== "All" || levelFilter !== "All" || orgFilter !== "All"
+                    ? "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500"
+                    : "bg-white dark:bg-[#121A2B] text-[#64748B] dark:text-[#94A3B8] border-black/10 dark:border-white/10 hover:border-violet-500"
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                Advanced Filters
+                {showAdvanced ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
+
+          <AnimatePresence>
+            {showAdvanced && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-6 pb-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* City Filter */}
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] flex items-center gap-2">
+                        <MapPin className="w-4 h-4" /> City
+                      </label>
+                      <select
+                        value={cityFilter}
+                        onChange={(e) => setCityFilter(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors cursor-pointer appearance-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.75rem center",
+                          backgroundSize: "1.25em 1.25em"
+                        }}
+                      >
+                        {cities.map(city => <option key={city} value={city}>{city}</option>)}
+                      </select>
+                    </div>
+
+                    {/* Theme Filter */}
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] flex items-center gap-2">
+                        <Target className="w-4 h-4" /> Theme
+                      </label>
+                      <select
+                        value={themeFilter}
+                        onChange={(e) => setThemeFilter(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors cursor-pointer appearance-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.75rem center",
+                          backgroundSize: "1.25em 1.25em"
+                        }}
+                      >
+                        {themes.map(theme => <option key={theme} value={theme}>{theme}</option>)}
+                      </select>
+                    </div>
+
+                    {/* Level Filter */}
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] flex items-center gap-2">
+                        <Award className="w-4 h-4" /> Level
+                      </label>
+                      <select
+                        value={levelFilter}
+                        onChange={(e) => setLevelFilter(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors cursor-pointer appearance-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.75rem center",
+                          backgroundSize: "1.25em 1.25em"
+                        }}
+                      >
+                        {levels.map(level => <option key={level} value={level}>{level}</option>)}
+                      </select>
+                    </div>
+
+                    {/* Organization Filter */}
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8] flex items-center gap-2">
+                        <Building className="w-4 h-4" /> Organization
+                      </label>
+                      <select
+                        value={orgFilter}
+                        onChange={(e) => setOrgFilter(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 transition-colors cursor-pointer appearance-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.75rem center",
+                          backgroundSize: "1.25em 1.25em"
+                        }}
+                      >
+                        {orgs.map(org => <option key={org} value={org}>{org}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  {(cityFilter !== "All" || themeFilter !== "All" || levelFilter !== "All" || orgFilter !== "All") && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex justify-end mt-4"
+                    >
+                      <button
+                        onClick={clearAdvancedFilters}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        Clear Filters
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
