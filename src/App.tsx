@@ -96,6 +96,9 @@ function App() {
               ? saved.projectTypes
               : [],
             avatar: saved.avatar || user.photoURL || DEFAULT_AVATAR,
+            pastHackathons: Array.isArray(saved.pastHackathons)
+              ? saved.pastHackathons
+              : [],
           });
           setHasCompletedProfile(true);
         } else {

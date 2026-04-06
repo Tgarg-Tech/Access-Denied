@@ -25,9 +25,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { db } from "../firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
-interface ProfilePageProps {}
-
-export function ProfilePage({}: ProfilePageProps) {
+export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { profile: profileData, updateProfile: setProfileData } = useProfile();
