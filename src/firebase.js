@@ -28,7 +28,12 @@ let db = null;
 if (hasFirebaseConfig) {
   app = initializeApp(firebaseConfig);
 
-  if (typeof window !== "undefined" && firebaseConfig.measurementId) {
+  // Only initialize analytics for production browser sessions.
+  if (
+    typeof window !== "undefined" &&
+    import.meta.env.PROD &&
+    firebaseConfig.measurementId
+  ) {
     try {
       analytics = getAnalytics(app);
     } catch (error) {

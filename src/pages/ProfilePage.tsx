@@ -23,7 +23,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { db } from "../firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
-interface ProfilePageProps {}
+interface ProfilePageProps {
+  autoOpenVerification?: boolean;
+}
 
 interface VerificationData {
   githubUrl: string;
@@ -112,7 +114,9 @@ const isCertificateLikeUrl = (value: string) => {
   );
 };
 
-export function ProfilePage({}: ProfilePageProps) {
+export function ProfilePage({
+  autoOpenVerification = false,
+}: ProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
@@ -204,6 +208,14 @@ export function ProfilePage({}: ProfilePageProps) {
 
     loadVerification();
   }, [user?.uid]);
+
+  useEffect(() => {
+    if (!autoOpenVerification) return;
+
+    setVerificationMessage("");
+    setVerificationMessageType("success");
+    setIsVerificationOpen(true);
+  }, [autoOpenVerification]);
 
   const handleSave = async () => {
     const nextProfile = {

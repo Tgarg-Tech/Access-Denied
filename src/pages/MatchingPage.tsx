@@ -70,6 +70,11 @@ interface TeamRecord {
   members?: string[];
 }
 
+interface RatingStats {
+  avg: number;
+  count: number;
+}
+
 interface RatingBreakdown {
   skillComplement: number;
   commonInterests: number;
@@ -295,6 +300,9 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
   const [busyRequestFor, setBusyRequestFor] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
   const [showVerificationLinks, setShowVerificationLinks] = useState(false);
+  const [ratingsByUserId, setRatingsByUserId] = useState<
+    Map<string, RatingStats>
+  >(new Map());
 
   const ownEmail = normalizeIdentifier(user?.email);
   const ownUsername = normalizeIdentifier(getUsernameFromEmail(user?.email));
@@ -409,6 +417,42 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
   }, [user?.uid]);
 
   useEffect(() => {
+    if (!db) return;
+
+    const unsubscribe = onSnapshot(
+      collection(db, "teammateReviews"),
+      (snapshot) => {
+        const aggregate = new Map<string, { sum: number; count: number }>();
+
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data() as { toUid?: string; rating?: number };
+          if (!data.toUid || typeof data.rating !== "number") return;
+
+          const existing = aggregate.get(data.toUid) || { sum: 0, count: 0 };
+          existing.sum += data.rating;
+          existing.count += 1;
+          aggregate.set(data.toUid, existing);
+        });
+
+        const nextRatings = new Map<string, RatingStats>();
+        aggregate.forEach((value, userId) => {
+          nextRatings.set(userId, {
+            avg: value.count ? value.sum / value.count : 0,
+            count: value.count,
+          });
+        });
+
+        setRatingsByUserId(nextRatings);
+      },
+      (err) => {
+        console.error("Failed to subscribe teammate reviews:", err);
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (!db || !user?.uid) return;
 
     const teamQuery = query(
@@ -498,6 +542,9 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
     (entry) => !reviewedCandidateIds.has(entry.candidate.id),
   );
   const currentUser = currentEntry?.candidate;
+  const currentRatingStats = currentUser
+    ? ratingsByUserId.get(currentUser.id)
+    : undefined;
   const verificationLinks = currentUser
     ? getVerificationLinks(currentUser)
     : [];
@@ -828,6 +875,12 @@ export function MatchingPage({ onNavigate = () => {} }: MatchingPageProps) {
               </div>
               <p className="text-sm font-semibold text-indigo-500 mb-1">
                 {currentUser.role || "Role not added"}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                {currentRatingStats?.count
+                  ? `${currentRatingStats.avg.toFixed(1)} (${currentRatingStats.count} review${currentRatingStats.count > 1 ? "s" : ""})`
+                  : "No ratings yet"}
               </p>
 
               {currentUserIsVerified && (

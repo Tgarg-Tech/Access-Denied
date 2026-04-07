@@ -1,5 +1,14 @@
 import { motion } from "framer-motion";
-import { AlertCircle, Check, Clock, Mail, Plus, Users, X } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  Clock,
+  Mail,
+  Plus,
+  Star,
+  Users,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   addDoc,
@@ -11,6 +20,7 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   Timestamp,
@@ -19,8 +29,7 @@ import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 
 interface TeamPageProps {
-  onNavigate: (page: string) => void;
-  onOpenSkillModal: () => void;
+  onNavigate: (page: string, contextId?: string) => void;
 }
 
 interface TeamRequest {
@@ -43,6 +52,13 @@ interface ProfileRecord {
   preferredRole?: string;
   technicalSkills?: string[];
   avatar?: string;
+  verification?: {
+    githubUrl?: string;
+    linkedinUrl?: string;
+    resumeUrl?: string;
+    certificateLinks?: string[];
+    status?: string;
+  };
 }
 
 interface TeamDocument {
@@ -55,6 +71,20 @@ interface TeamDocument {
   }>;
   status?: string;
   createdAt?: Timestamp;
+}
+
+interface TeammateReview {
+  id: string;
+  teamId: string;
+  fromUid: string;
+  toUid: string;
+  fromName?: string;
+  toName?: string;
+  rating: number;
+  feedback?: string;
+  isReadByRecipient?: boolean;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
 }
 
 const TEAM_TARGET_SIZE = 5;
@@ -125,7 +155,7 @@ function TeamReadinessRing({ score }: { score: number }) {
   );
 }
 
-export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
+export function TeamPage({ onNavigate }: TeamPageProps) {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [teamRequests, setTeamRequests] = useState<TeamRequest[]>([]);
@@ -135,6 +165,30 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
   const [myTeams, setMyTeams] = useState<TeamDocument[]>([]);
   const [actionRequestId, setActionRequestId] = useState<string | null>(null);
   const [isLeavingTeam, setIsLeavingTeam] = useState(false);
+  const [reviewsByTeammate, setReviewsByTeammate] = useState<
+    Map<string, TeammateReview>
+  >(new Map());
+  const [reviewTargetMember, setReviewTargetMember] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewFeedback, setReviewFeedback] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState<string | null>(null);
+
+  const isProfileSkillsVerified = (profile?: ProfileRecord | null) => {
+    if (!profile?.verification) return false;
+
+    const links = [
+      profile.verification.githubUrl,
+      profile.verification.linkedinUrl,
+      profile.verification.resumeUrl,
+      ...(profile.verification.certificateLinks || []),
+    ].filter((value) => Boolean(value?.trim()));
+
+    return links.length > 0 || profile.verification.status === "submitted";
+  };
 
   useEffect(() => {
     if (!db || !user?.uid) {
@@ -208,7 +262,38 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
     };
   }, [user?.uid]);
 
+  useEffect(() => {
+    if (!db || !user?.uid) return;
+
+    const myReviewsQuery = query(
+      collection(db, "teammateReviews"),
+      where("fromUid", "==", user.uid),
+    );
+
+    const unsubscribe = onSnapshot(
+      myReviewsQuery,
+      (snapshot) => {
+        const map = new Map<string, TeammateReview>();
+
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data() as Omit<TeammateReview, "id">;
+          if (!data.toUid) return;
+          map.set(data.toUid, { id: docSnap.id, ...data });
+        });
+
+        setReviewsByTeammate(map);
+      },
+      (err) => {
+        console.error("Failed to subscribe teammate reviews:", err);
+      },
+    );
+
+    return unsubscribe;
+  }, [user?.uid]);
+
   const activeTeam = myTeams[0] || null;
+  const myProfileRecord = user?.uid ? profilesMap.get(user.uid) : null;
+  const skillsVerified = isProfileSkillsVerified(myProfileRecord);
 
   const currentMembers = useMemo(() => {
     const memberIds = activeTeam?.members || (user?.uid ? [user.uid] : []);
@@ -385,6 +470,56 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
     }
   };
 
+  const openReviewModal = (member: { id: string; name: string }) => {
+    const existing = reviewsByTeammate.get(member.id);
+    setReviewTargetMember(member);
+    setReviewRating(existing?.rating || 0);
+    setReviewFeedback(existing?.feedback || "");
+    setReviewMessage(null);
+  };
+
+  const submitReview = async () => {
+    if (!db || !user?.uid || !activeTeam?.id || !reviewTargetMember) return;
+    if (reviewTargetMember.id === user.uid) return;
+    if (reviewRating < 1 || reviewRating > 5) {
+      setReviewMessage("Please select a rating from 1 to 5 stars.");
+      return;
+    }
+
+    try {
+      setIsSubmittingReview(true);
+      const reviewDocId = `${activeTeam.id}_${user.uid}_${reviewTargetMember.id}`;
+      const reviewerProfile = profilesMap.get(user.uid);
+
+      await setDoc(
+        doc(db, "teammateReviews", reviewDocId),
+        {
+          teamId: activeTeam.id,
+          fromUid: user.uid,
+          toUid: reviewTargetMember.id,
+          fromName: getProfileName(reviewerProfile) || user.email || "Teammate",
+          toName: reviewTargetMember.name,
+          rating: reviewRating,
+          feedback: reviewFeedback.trim(),
+          isReadByRecipient: false,
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+
+      setReviewMessage("Review submitted successfully.");
+      setReviewTargetMember(null);
+      setReviewFeedback("");
+      setReviewRating(0);
+    } catch (err) {
+      console.error("Failed to submit teammate review:", err);
+      setReviewMessage("Could not submit review right now. Please try again.");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1020] pt-24 pb-20 px-6 flex items-center justify-center text-[#64748B] dark:text-[#94A3B8]">
@@ -446,10 +581,17 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={onOpenSkillModal}
-                  className="px-6 py-3 bg-white dark:bg-[#0B1020] text-[#0F172A] dark:text-[#F8FAFC] font-semibold rounded-xl border border-black/10 dark:border-white/10 hover:bg-[#F8FAFC] dark:hover:bg-[#132036] transition-all"
+                  onClick={() => {
+                    if (skillsVerified) return;
+                    onNavigate("my-profile", "verify-links");
+                  }}
+                  className={`px-6 py-3 font-semibold rounded-xl border transition-all ${
+                    skillsVerified
+                      ? "bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300 cursor-default"
+                      : "bg-white dark:bg-[#0B1020] text-[#0F172A] dark:text-[#F8FAFC] border-black/10 dark:border-white/10 hover:bg-[#F8FAFC] dark:hover:bg-[#132036]"
+                  }`}
                 >
-                  Verify Your Skills
+                  {skillsVerified ? "Skills Verified" : "Verify Your Skills"}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -530,11 +672,37 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
                   </div>
                   {member.id === user?.uid && (
                     <button
-                      onClick={onOpenSkillModal}
-                      className="mt-3 w-full px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-sm font-medium hover:bg-yellow-500/20 transition-colors flex items-center justify-center gap-2"
+                      onClick={() => {
+                        if (skillsVerified) return;
+                        onNavigate("my-profile", "verify-links");
+                      }}
+                      className={`mt-3 w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                        skillsVerified
+                          ? "bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 cursor-default"
+                          : "bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/20"
+                      }`}
                     >
-                      <AlertCircle className="w-4 h-4" />
-                      Verify Your Skills
+                      {skillsVerified ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4" />
+                      )}
+                      {skillsVerified
+                        ? "Skills Verified"
+                        : "Verify Your Skills"}
+                    </button>
+                  )}
+                  {member.id !== user?.uid && activeTeam && (
+                    <button
+                      onClick={() =>
+                        openReviewModal({ id: member.id, name: member.name })
+                      }
+                      className="mt-3 w-full px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-300 text-sm font-medium hover:bg-blue-500/20 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Star className="w-4 h-4" />
+                      {reviewsByTeammate.has(member.id)
+                        ? "Update Review"
+                        : "Rate & Review"}
                     </button>
                   )}
                 </div>
@@ -762,6 +930,87 @@ export function TeamPage({ onNavigate, onOpenSkillModal }: TeamPageProps) {
             Find Suggested Members
           </motion.button>
         </motion.div>
+
+        {reviewTargetMember && (
+          <div className="fixed inset-0 z-[70] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#121A2B] border border-black/10 dark:border-white/10 shadow-2xl p-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                    Rate {reviewTargetMember.name}
+                  </h3>
+                  <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
+                    Your feedback is private and only visible to this teammate.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setReviewTargetMember(null)}
+                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] mb-2">
+                  Rating
+                </p>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <button
+                      key={value}
+                      onClick={() => setReviewRating(value)}
+                      className="p-1"
+                    >
+                      <Star
+                        className={`w-7 h-7 ${
+                          value <= reviewRating
+                            ? "text-amber-400 fill-amber-400"
+                            : "text-slate-300 dark:text-slate-600"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <label className="block text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] mb-2">
+                  Feedback
+                </label>
+                <textarea
+                  rows={4}
+                  value={reviewFeedback}
+                  onChange={(e) => setReviewFeedback(e.target.value)}
+                  placeholder="Share helpful feedback for your teammate"
+                  className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0B1020] border border-black/10 dark:border-white/10 text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-violet-500 resize-none"
+                />
+              </div>
+
+              {reviewMessage && (
+                <div className="mb-3 text-sm text-violet-600 dark:text-violet-300">
+                  {reviewMessage}
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 mt-4">
+                <button
+                  onClick={() => setReviewTargetMember(null)}
+                  className="px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-[#64748B] dark:text-[#94A3B8]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitReview}
+                  disabled={isSubmittingReview}
+                  className="px-5 py-2 rounded-lg bg-violet-600 text-white font-semibold hover:bg-violet-700 disabled:opacity-70"
+                >
+                  {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

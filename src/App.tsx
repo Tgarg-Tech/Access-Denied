@@ -235,11 +235,12 @@ function App() {
       const raw = window.location.hash ? window.location.hash.slice(1) : "";
       if (!raw) {
         setCurrentPage("landing");
+        setSelectedHackathonId("");
         return;
       }
       const [pagePart, idPart] = raw.split("/");
       setCurrentPage(pagePart as Page);
-      if (idPart) setSelectedHackathonId(idPart);
+      setSelectedHackathonId(idPart || "");
     };
 
     // Initialize from current hash
@@ -252,9 +253,7 @@ function App() {
 
   const handleNavigate = useCallback((page: string, hackathonId?: string) => {
     setCurrentPage(page as Page);
-    if (hackathonId) {
-      setSelectedHackathonId(hackathonId);
-    }
+    setSelectedHackathonId(hackathonId || "");
 
     // update URL hash so the browser shows the current page and back/forward works
     try {
@@ -386,7 +385,11 @@ function App() {
         />
       )}
       {currentPage === "home" && <Home onNavigate={handleNavigate} />}
-      {currentPage === "my-profile" && <ProfilePage />}
+      {currentPage === "my-profile" && (
+        <ProfilePage
+          autoOpenVerification={selectedHackathonId === "verify-links"}
+        />
+      )}
       {currentPage === "dashboard" && (
         <HackathonDashboard onNavigate={handleNavigate} />
       )}
@@ -400,12 +403,7 @@ function App() {
         <MatchingPage onNavigate={handleNavigate} />
       )}
       {currentPage === "explore" && <ExplorePage />}
-      {currentPage === "team" && (
-        <TeamPage
-          onNavigate={handleNavigate}
-          onOpenSkillModal={() => setIsSkillModalOpen(true)}
-        />
-      )}
+      {currentPage === "team" && <TeamPage onNavigate={handleNavigate} />}
 
       <SkillVerificationModal
         isOpen={isSkillModalOpen}

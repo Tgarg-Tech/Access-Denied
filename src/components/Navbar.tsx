@@ -1,21 +1,57 @@
 import { useState, useRef, useEffect } from "react";
-import { Moon, Sun, Users, LogOut, Settings, ChevronDown } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  LogOut,
+  Moon,
+  Settings,
+  Star,
+  Sun,
+  Users,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
 import { useProfile } from "../contexts/ProfileContext";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 interface NavbarProps {
   onNavigate: (page: string, hackathonId?: string) => void;
   currentPage: string;
 }
 
+interface FeedbackNotification {
+  id: string;
+  fromUid: string;
+  fromName?: string;
+  rating?: number;
+  feedback?: string;
+  isReadByRecipient?: boolean;
+  createdAt?: Timestamp;
+}
+
+const toMillis = (value?: Timestamp) => value?.toMillis?.() || 0;
+
 export function Navbar({ onNavigate, currentPage }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const { profile, logout } = useProfile();
   const { user, logout: signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [feedbackNotifications, setFeedbackNotifications] = useState<
+    FeedbackNotification[]
+  >([]);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const feedbackRef = useRef<HTMLDivElement | null>(null);
   const isPublicNav =
     !user || currentPage === "landing" || currentPage.startsWith("auth-");
   const profileInitial = (
@@ -24,14 +60,83 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
 
   useEffect(() => {
     function handleDocumentClick(e: MouseEvent) {
-      if (!dropdownRef.current) return;
-      if (isDropdownOpen && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+
+      if (
+        isDropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setIsDropdownOpen(false);
+      }
+
+      if (
+        isFeedbackOpen &&
+        feedbackRef.current &&
+        !feedbackRef.current.contains(target)
+      ) {
+        setIsFeedbackOpen(false);
       }
     }
     document.addEventListener("mousedown", handleDocumentClick);
     return () => document.removeEventListener("mousedown", handleDocumentClick);
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isFeedbackOpen]);
+
+  useEffect(() => {
+    if (!db || !user?.uid) {
+      setFeedbackNotifications([]);
+      return;
+    }
+
+    const feedbackQuery = query(
+      collection(db, "teammateReviews"),
+      where("toUid", "==", user.uid),
+    );
+
+    const unsubscribe = onSnapshot(
+      feedbackQuery,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<FeedbackNotification, "id">),
+          }))
+          .sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
+
+        setFeedbackNotifications(items);
+      },
+      (err) => {
+        console.error("Failed to subscribe feedback notifications:", err);
+      },
+    );
+
+    return unsubscribe;
+  }, [user?.uid]);
+
+  const unreadFeedbackCount = feedbackNotifications.filter(
+    (item) => !item.isReadByRecipient,
+  ).length;
+
+  const toggleFeedbackDropdown = async () => {
+    const willOpen = !isFeedbackOpen;
+    setIsFeedbackOpen(willOpen);
+
+    if (!willOpen || !db) return;
+
+    const unreadItems = feedbackNotifications.filter(
+      (item) => !item.isReadByRecipient,
+    );
+
+    await Promise.all(
+      unreadItems.map((item) =>
+        updateDoc(doc(db, "teammateReviews", item.id), {
+          isReadByRecipient: true,
+        }).catch((err) => {
+          console.error("Failed to mark feedback notification as read:", err);
+        }),
+      ),
+    );
+  };
 
   const mainNav = [
     { label: "Hackathons", page: "dashboard" },
@@ -162,6 +267,80 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
           )}
 
           <div className="flex items-center gap-3">
+            {user && !isPublicNav && (
+              <div className="relative" ref={feedbackRef}>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={toggleFeedbackDropdown}
+                  className={`relative p-2 rounded-lg transition-all ${
+                    theme === "dark"
+                      ? "bg-white/5 border border-white/10 hover:bg-white/10"
+                      : "bg-white/75 border border-white hover:bg-white"
+                  }`}
+                  aria-label="Open feedback notifications"
+                >
+                  <Bell className="w-5 h-5 text-[#4c5af4] dark:text-[#bfc7ff]" />
+                  {unreadFeedbackCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      {unreadFeedbackCount > 9 ? "9+" : unreadFeedbackCount}
+                    </span>
+                  )}
+                </motion.button>
+
+                <AnimatePresence>
+                  {isFeedbackOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className={`absolute right-0 mt-3 w-80 rounded-xl shadow-2xl overflow-hidden border z-[80] ${
+                        theme === "dark"
+                          ? "shadow-black/40 bg-gradient-to-b from-[#11182f]/95 to-[#0b1226]/95 border-[#8f9cff]/20"
+                          : "shadow-slate-300/50 bg-gradient-to-b from-[#f8f9ff] to-white border-white"
+                      }`}
+                    >
+                      <div className="px-4 py-3 border-b border-black/10 dark:border-white/10">
+                        <div className="font-semibold text-sm text-slate-800 dark:text-slate-100">
+                          Feedback Notifications
+                        </div>
+                      </div>
+
+                      <div className="max-h-96 overflow-y-auto">
+                        {feedbackNotifications.length === 0 ? (
+                          <div className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400 text-center">
+                            No feedback yet.
+                          </div>
+                        ) : (
+                          <div className="p-3 space-y-3">
+                            {feedbackNotifications.map((item) => (
+                              <div
+                                key={item.id}
+                                className="p-3 rounded-lg bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/10"
+                              >
+                                <div className="flex items-center justify-between gap-2 mb-1">
+                                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                                    {item.fromName || "Teammate"}
+                                  </p>
+                                  <span className="text-xs inline-flex items-center gap-1 text-amber-500">
+                                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                                    {item.rating || 0}/5
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                                  {item.feedback ||
+                                    "No text feedback provided."}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}

@@ -15,6 +15,7 @@ import {
 import {
   Search,
   Sparkles,
+  Star,
   Users,
   GraduationCap,
   MapPin,
@@ -71,6 +72,11 @@ interface TeamRecord {
   members?: string[];
 }
 
+interface RatingStats {
+  avg: number;
+  count: number;
+}
+
 const DEFAULT_AVATAR =
   "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400";
 const MAX_OUTGOING_PENDING_REQUESTS = 5;
@@ -113,6 +119,9 @@ export function ExplorePage() {
   const [openVerificationProfileId, setOpenVerificationProfileId] = useState<
     string | null
   >(null);
+  const [ratingsByUserId, setRatingsByUserId] = useState<
+    Map<string, RatingStats>
+  >(new Map());
 
   const ownEmail = normalize(user?.email);
   const ownUsername = normalize(getUsernameFromEmail(user?.email));
@@ -212,6 +221,42 @@ export function ExplorePage() {
 
     return unsubscribe;
   }, [user?.uid]);
+
+  useEffect(() => {
+    if (!db) return;
+
+    const unsubscribe = onSnapshot(
+      collection(db, "teammateReviews"),
+      (snapshot) => {
+        const aggregate = new Map<string, { sum: number; count: number }>();
+
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data() as { toUid?: string; rating?: number };
+          if (!data.toUid || typeof data.rating !== "number") return;
+
+          const existing = aggregate.get(data.toUid) || { sum: 0, count: 0 };
+          existing.sum += data.rating;
+          existing.count += 1;
+          aggregate.set(data.toUid, existing);
+        });
+
+        const nextRatings = new Map<string, RatingStats>();
+        aggregate.forEach((value, userId) => {
+          nextRatings.set(userId, {
+            avg: value.count ? value.sum / value.count : 0,
+            count: value.count,
+          });
+        });
+
+        setRatingsByUserId(nextRatings);
+      },
+      (err) => {
+        console.error("Failed to subscribe teammate reviews:", err);
+      },
+    );
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!user?.uid || !db) return;
@@ -585,6 +630,7 @@ export function ExplorePage() {
                   const isVerified = isProfileVerified(profile);
                   const showVerificationLinks =
                     openVerificationProfileId === profile.id;
+                  const ratingStats = ratingsByUserId.get(profile.id);
 
                   // Check if already sent request
                   const hasRequestPending = teamRequests.some(
@@ -652,6 +698,12 @@ export function ExplorePage() {
                             </div>
                             <p className="text-xs text-[#4b5f87] dark:text-[#9eb2da] truncate">
                               {profile.preferredRole || "Role not added"}
+                            </p>
+                            <p className="mt-1 text-[11px] text-[#5f6f92] dark:text-[#9eb2da] flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                              {ratingStats?.count
+                                ? `${ratingStats.avg.toFixed(1)} (${ratingStats.count} review${ratingStats.count > 1 ? "s" : ""})`
+                                : "No ratings yet"}
                             </p>
                             {profile.username && (
                               <p className="mt-0.5 text-[11px] text-[#6b7fa5] dark:text-[#88a0cd] truncate">
